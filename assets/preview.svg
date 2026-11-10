@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" role="img" aria-labelledby="title desc">
+<title id="title">Hotel Grand Atrium</title>
+<desc id="desc">Corredor escuro com uma porta iluminada, nome do jogo e indicação do capítulo I.</desc>
+<defs>
+<linearGradient id="bg" x2="0" y2="1"><stop stop-color="#171e20"/><stop offset="1" stop-color="#030507"/></linearGradient>
+<linearGradient id="door" x2="0" y2="1"><stop stop-color="#936e48"/><stop offset="1" stop-color="#352820"/></linearGradient>
+<radialGradient id="light"><stop stop-color="#bba177" stop-opacity=".37"/><stop offset="1" stop-color="#171e20" stop-opacity="0"/></radialGradient>
+</defs>
+<rect width="1200" height="630" fill="url(#bg)"/>
+<path d="M0 0L456 120 456 475 0 630Z" fill="#152020"/>
+<path d="M1200 0L744 120 744 475 1200 630Z" fill="#172020"/>
+<path d="M0 630L456 475 744 475 1200 630Z" fill="#1b2421"/>
+<path d="M456 120H744V475H456Z" fill="#0a1112"/>
+<ellipse cx="600" cy="305" rx="340" ry="300" fill="url(#light)"/>
+<rect x="521" y="180" width="158" height="295" rx="2" fill="#101717" stroke="#8a7a62" stroke-width="10"/>
+<rect x="537" y="197" width="126" height="278" fill="url(#door)" stroke="#211a17" stroke-width="6"/>
+<circle cx="647" cy="341" r="7" fill="#efd8a8"/>
+<rect x="564" y="223" width="72" height="32" rx="4" fill="#241d1b" stroke="#967653"/>
+<text x="600" y="247" font-family="serif" font-size="25" text-anchor="middle" fill="#e7d6ab">050</text>
+<path d="M460 126L390 0M740 126L810 0M457 475L220 630M743 475L980 630" stroke="#7a7964" stroke-opacity=".23" stroke-width="3"/>
+<rect y="460" width="1200" height="170" fill="#030506" opacity=".87"/>
+<text x="600" y="523" font-family="Georgia,serif" font-size="65" font-weight="bold" letter-spacing="7" text-anchor="middle" fill="#e9e2d2">HOTEL GRAND ATRIUM</text>
+<text x="600" y="573" font-family="Arial,sans-serif" font-size="20" letter-spacing="9" text-anchor="middle" fill="#b89b71">CAPÍTULO I · A PORTA 050</text>
+</svg>
