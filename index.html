@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover"><meta name="theme-color" content="#060a0d">
 <title>Hotel Grand Atrium — Capítulo I: A Porta 050</title>
-<meta name="game-version" content="1.3.0">
+<meta name="game-version" content="1.4.0">
 <meta name="description" content="Hotel Grand Atrium: jogo de terror retrô em primeira pessoa. Explore 50 portas, descubra criaturas, enfrente sustos e sobreviva ao primeiro capítulo.">
 <style>
 :root{--paper:#e8e4d6;--faint:#9ca7a0;--gold:#d9b57b;--red:#ef5659;--mint:#b7ead4;--line:#d6d7bd30}*{box-sizing:border-box}html,body{width:100%;height:100%;margin:0;overflow:hidden;background:#050808;color:var(--paper);font-family:Inter,"Segoe UI",Arial,sans-serif;user-select:none;-webkit-user-select:none;touch-action:none}button{font:inherit;color:inherit;cursor:pointer}#view{position:fixed;inset:0;width:100%;height:100%;object-fit:cover;display:block;touch-action:none}#grain,#vignette,#hurtFx,#darkFx{pointer-events:none;position:fixed;inset:0}#grain{z-index:4;opacity:.10;mix-blend-mode:screen;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)' opacity='.75'/%3E%3C/svg%3E");animation:grain .18s steps(2) infinite alternate}@keyframes grain{from{transform:translate(0,0)}to{transform:translate(1%,-1%)}}#vignette{z-index:3;background:radial-gradient(ellipse at 50% 49%,transparent 24%,#0005 73%,#000e 100%)}#hurtFx{z-index:5;opacity:0;transition:opacity .22s;background:radial-gradient(ellipse at center,transparent 22%,#81050d77 61%,#dd0a18b0 100%)}#darkFx{z-index:3;opacity:0;transition:opacity .6s;background:radial-gradient(ellipse at 50% 51%,transparent 8%,#030508a8 60%,#010202ee 100%)}
@@ -99,6 +99,24 @@
 }
 @media(max-height:640px){#mainOverlay.deathScreen{align-items:flex-start}#mainOverlay.deathScreen .panel{margin:auto 0}}
 
+
+/* A Duplicata mantém o jogador agarrado durante os três minigames.
+   Canvas próprio em baixa resolução garante animação leve no celular. */
+#qteEyeCanvas{position:absolute;inset:0;width:100%;height:100%;z-index:1;display:none;pointer-events:none;opacity:.98}
+#qte.duplicata #qteEyeCanvas{display:block}
+#qte.duplicata:before,#qte.duplicata:after{display:none}
+#qte.duplicata{background:radial-gradient(ellipse at 36% 49%,#4e1520fa,#0b080dfd 62%,#030507 95%)}
+#qte.duplicata .qteBox{max-width:530px;background:linear-gradient(132deg,#0b080de6,#200e14e9);padding:clamp(16px,2.5vw,27px);border:1px solid #b76a739a;border-radius:4px;box-shadow:0 0 60px #070307d9,0 0 30px #931b3150;backdrop-filter:blur(1.5px)}
+#qte.duplicata .qteIndex{color:#e7a7a4}
+#qte.duplicata .qteTitle{color:#ffe7e1;text-shadow:0 0 18px #9a1638}
+#qte.duplicata .qteDesc{color:#e7c7c1}
+#qte.duplicata .qteFoot{color:#e4aaa7}
+#qte.duplicata .qteTime>div{background:linear-gradient(90deg,#aa283d,#f58283)}
+#qte.duplicata.released #qteEyeCanvas{animation:handLetGo .72s forwards}
+@keyframes handLetGo{from{opacity:1;transform:scale(1)}to{opacity:0;transform:scale(1.5) translateY(-15%)}}
+@media(min-width:900px){#qte.duplicata .qteBox{margin-left:min(31vw,380px)}}
+@media(max-width:899px){#qte.duplicata .qteBox{margin-top:min(23vh,130px);padding:15px}}
+@media(max-width:500px){#qte.duplicata .qteBox{padding:12px;margin-top:min(19vh,90px)}#qte.duplicata .qteTitle{font-size:clamp(28px,8vw,44px);margin:8px 0}#qte.duplicata .qteDesc{font-size:11px;line-height:1.45}#qte.duplicata .qteBar{margin:12px auto}#qte.duplicata .qteFoot{font-size:9px}}
 </style>
 <!-- Audio credits: https://opengameart.org/content/elevator-ding ; https://opengameart.org/content/old-elevator-door ; https://opengameart.org/content/ghostmonster-sounds ; https://opengameart.org/content/enemy-sounds ; https://opengameart.org/content/ambient-horror ; https://opengameart.org/content/mechanical-sounds ; https://opengameart.org/content/steps-in-wood-floor ; each CC0. Internet required for streamed recorded SFX; procedural offline fallback. -->
 </head>
@@ -107,7 +125,7 @@
 <div id="hud"><div class="top"><div><div class="roomNum"><small>HOTEL GRAND ATRIUM / PORTA</small><span id="roomNo">001</span> <span id="totalLabel" style="font:500 12px Inter,Arial;color:#e1c79c">/ 050</span></div><div class="meter"><div id="hpBar" class="health"></div></div><div class="meter stamina"><div id="stBar" class="staminaFill"></div></div><div id="stanceText" class="stanceText">● EM PÉ</div></div><div class="topRight"><div class="bag"><div class="bagHead">INVENTÁRIO</div><div class="bagRow"><span>◈ Bateria</span><b id="batText">100%</b></div><div class="bagRow"><span>⌁ Chave</span><b id="keyText">—</b></div><div class="bagRow"><span>✚ Curativos</span><b id="healText">1</b></div></div><button class="menuBtn" id="pauseBtn" aria-label="Pausar">Ⅱ</button></div></div><div class="chapter" id="chapter">SIGA PARA A PRÓXIMA PORTA</div><div id="objectiveTrack"><span id="objectiveArrow">◆</span><span id="objectiveLabel">EXPLORE O HOTEL</span></div><div id="crosshair"></div><div id="signal" aria-live="polite"></div><div id="interaction"><span class="keycap" id="actionKey">E</span><div class="contextLabel"><span id="actionText">ABRIR PORTA</span><small id="actionSub">INTERAGIR</small></div></div><div class="notification" id="notice"><strong id="noticeTitle"></strong><span id="noticeSub"></span></div><div class="subtitle" id="subtitle"></div><div class="echoWarning" id="echoWarning">NÃO SE MEXA</div><div class="bottom"><div class="item" id="lightItem"><b>☼</b><span>F · LUZ</span></div><div class="item" id="healItem"><b>✚</b><span>Q · CURA</span></div><div class="hint"><kbd>WASD</kbd> MOVER &nbsp; <kbd>MOUSE</kbd> OLHAR &nbsp; <kbd>E</kbd> INTERAGIR<br><kbd>SHIFT</kbd> CORRER &nbsp; <kbd>C</kbd> AGACHAR &nbsp; <kbd>V</kbd> OUVIR PORTA<br><kbd>F</kbd> LANTERNA &nbsp; <kbd>ESC</kbd> PAUSAR</div></div></div>
 <aside id="trainingCard"><div class="trEyebrow" id="trEyebrow">TREINAMENTO · 1/7</div><h3 id="trTitle">Aprenda a sobreviver</h3><p id="trDesc"></p><div class="trGoal" id="trGoal"></div><button id="tutRepeat">R · REPETIR ETAPA</button><button id="tutSkip">T · PULAR TUTORIAL</button></aside>
 <div id="mobile"><div class="joyBg" id="joy"><div class="joyDot" id="joyDot"></div></div><div class="lookHint">ARRASTE PARA OLHAR</div><div class="touchBtns"><button class="touchBtn" id="touchE" aria-label="Interagir">E<small>ABRIR</small></button><button class="touchBtn" id="lightMobile" aria-label="Ligar e desligar lanterna">☼<small>LUZ</small></button><button class="touchBtn" id="touchRun" aria-label="Alternar corrida">⇧<small>CORRER</small></button><button class="touchBtn" id="touchCrouch" aria-label="Agachar">⌄<small>AGACHAR</small></button><button class="touchBtn" id="touchHeal" aria-label="Curativo">✚<small>CURAR</small></button><button class="touchBtn" id="touchListen" aria-label="Escutar porta">♫<small>OUVIR</small></button></div></div>
-<div id="qte"><div class="qteBox"><div class="qteIndex" id="qteIndex">SEGUNDA CHANCE · 1 / 3</div><h2 class="qteTitle" id="qteTitle">RESPIRE.</h2><p class="qteDesc" id="qteDesc">Tente escapar.</p><div class="qteBar" id="qteBar"><div class="qteZone"></div><div id="qteCursor" class="qteCursor"></div></div><div class="qteCount" id="qteCount"></div><div class="qteSequence" id="qteSequence"></div><div class="qteTime"><div id="qteTimeBar"></div></div><div class="qteButtons" id="qteButtons"></div><div class="qteFoot">UM ERRO PODE SER O ÚLTIMO.</div></div></div>
+<div id="qte"><canvas id="qteEyeCanvas" aria-hidden="true"></canvas><div class="qteBox"><div class="qteIndex" id="qteIndex">SEGUNDA CHANCE · 1 / 3</div><h2 class="qteTitle" id="qteTitle">RESPIRE.</h2><p class="qteDesc" id="qteDesc">Tente escapar.</p><div class="qteBar" id="qteBar"><div class="qteZone"></div><div id="qteCursor" class="qteCursor"></div></div><div class="qteCount" id="qteCount"></div><div class="qteSequence" id="qteSequence"></div><div class="qteTime"><div id="qteTimeBar"></div></div><div class="qteButtons" id="qteButtons"></div><div class="qteFoot">UM ERRO PODE SER O ÚLTIMO.</div></div></div>
 <div id="finaleUI"><button id="skipFinale">PULAR CENA »</button><div id="finaleControls"><button id="finaleAgain">JOGAR DE NOVO</button><button id="finaleMenu">VOLTAR AO MENU</button></div></div>
 <div id="mainOverlay"><div class="panel" id="menuPanel"><div class="eyebrow">UM JOGO DE SOBREVIVÊNCIA</div><h1 class="title">HOTEL<br><em>GRAND<br>ATRIUM</em></h1><p class="desc">Cinquenta portas. Um hotel que não deveria existir. Cada quarto tem uma regra diferente para sobreviver.</p><p class="feature"><b>EXPLORAR</b> salas e procurar chaves &nbsp; · &nbsp; <b>ESCONDER-SE</b> de criaturas &nbsp; · &nbsp; <b>CORRER</b> quando as luzes falharem &nbsp; · &nbsp; <b>SOBREVIVER</b> ao desconhecido</p><div class="buttons"><button class="primary" id="playBtn">ENTRAR NO HOTEL</button><button class="outline" id="controlsBtn">COMO JOGAR</button></div><div class="foot">ELEVADOR · RECEPÇÃO · 50 PORTAS · 6 AMEAÇAS · PC E CELULAR<br><span style="color:#bdb0a0">🔊 <span id="audioSourceStatus">Gravações CC0 online + sons offline</span></span></div></div>
 <details id="audioCredits" style="position:absolute;bottom:8px;left:10px;right:10px;text-align:center;color:#8ba399;font:10px Arial,sans-serif;z-index:3;max-width:740px;margin:auto;line-height:1.55;opacity:.92"><summary style="cursor:pointer;padding:4px">EFEITOS SONOROS · CC0 · fontes e funcionamento</summary><div style="background:#080d0ee8;border:1px solid #46524a;border-radius:8px;padding:9px">Gravações usadas online: <a href="https://opengameart.org/content/elevator-ding" target="_blank" rel="noopener" style="color:#c7d8c7">fvcalderan</a> (sino), <a href="https://opengameart.org/content/old-elevator-door" target="_blank" rel="noopener" style="color:#c7d8c7">sinny</a> (portas do elevador), <a href="https://opengameart.org/content/ghostmonster-sounds" target="_blank" rel="noopener" style="color:#c7d8c7">iletzy</a> (monstro), <a href="https://opengameart.org/content/enemy-sounds" target="_blank" rel="noopener" style="color:#c7d8c7">AbNormalHumanBeing</a> (criaturas), <a href="https://opengameart.org/content/ambient-horror" target="_blank" rel="noopener" style="color:#c7d8c7">techiew</a> (ambiente), <a href="https://opengameart.org/content/mechanical-sounds" target="_blank" rel="noopener" style="color:#c7d8c7">BMacZero</a> (metal), <a href="https://opengameart.org/content/steps-in-wood-floor" target="_blank" rel="noopener" style="color:#c7d8c7">mikeask</a> (passos). Se a conexão falhar, o jogo usa efeitos procedurais. Todos os materiais listados são CC0.</div></details>
@@ -1209,7 +1227,7 @@ function drawScareCreature(c,type,fatal,t){
 /* DUPLICATA 1.3: a wooden door splits, then a many-jointed forearm and a
    single giant watching eye erupt from the darkness inside the door. */
 function creatureEase(a,b,v){let q=clamp((v-a)/(b-a),0,1);return q*q*(3-2*q);}
-function giantPalmEye(c,x,y,size,open,t,grasp){
+function giantPalmEye(c,x,y,size,open,t,grasp,gazeX=0,gazeY=0){
  c.save();c.translate(x,y);c.rotate(Math.sin(t*8)*.075);c.scale(size,size);
  const skin=c.createLinearGradient(-90,-75,100,150);
  skin.addColorStop(0,'#c0a7a2');skin.addColorStop(.32,'#715d61');skin.addColorStop(.71,'#362027');skin.addColorStop(1,'#100d14');
@@ -1273,8 +1291,9 @@ function giantPalmEye(c,x,y,size,open,t,grasp){
   c.lineTo(Math.cos(a)*(29+i%4*3),-13+Math.sin(a)*(29+i%4*3)*slit);
   c.strokeStyle=i%3?'#5d1431':'#ffe2d7';c.lineWidth=1.8;c.stroke();
  }
- c.beginPath();c.ellipse(0,-13,16+grasp*5,27*slit,0,0,TAU);c.fillStyle='#07030a';c.fill();
- scareCircle(c,-10,-29,9,7,'#fff4d9');c.restore();
+ const lookX=clamp(gazeX,-1,1)*16,lookY=clamp(gazeY,-1,1)*12*slit;
+ c.beginPath();c.ellipse(lookX,-13+lookY,16+grasp*5,27*slit,0,0,TAU);c.fillStyle='#07030a';c.fill();
+ scareCircle(c,-11+lookX*.6,-29+lookY*.6,9,7,'#fff4d9');c.restore();
  c.beginPath();c.ellipse(0,-14,57,49*slit,0,0,TAU);c.lineWidth=8;c.strokeStyle='#2a111d';c.stroke();
  c.beginPath();c.moveTo(-53,-14);c.quadraticCurveTo(0,-14-48*slit,53,-14);
  c.lineWidth=8;c.strokeStyle='#d3aaa6';c.stroke();
@@ -1338,6 +1357,45 @@ function drawDuplicataDoorAttack(c,j){
  c.restore();
 }
 
+
+/* Efeito da segunda chance para a Duplicata. O olho acompanha mouse,
+   toque e teclas. O braço se contorce conforme a fuga progride. */
+const qteEyeCanvas=$('qteEyeCanvas'),qteEyeCtx=qteEyeCanvas.getContext('2d',{alpha:true});
+let qteEyeLastW=0,qteEyeLastH=0;
+function trackDuplicataGaze(px,py){
+ const q=G.qte;if(G.mode!=='qte'||q?.reason!=='A DUPLICATA')return;
+ const r=$('qte').getBoundingClientRect();
+ q.eyeTx=clamp(((px-r.left)/Math.max(1,r.width)-.5)*2,-1,1);
+ q.eyeTy=clamp(((py-r.top)/Math.max(1,r.height)-.5)*2,-1,1);
+}
+$('qte').addEventListener('pointermove',e=>trackDuplicataGaze(e.clientX,e.clientY),{passive:true});
+$('qte').addEventListener('pointerdown',e=>trackDuplicataGaze(e.clientX,e.clientY),{passive:true});
+function drawDuplicataGrip(){
+ if(!G.qte||G.qte.reason!=='A DUPLICATA'||G.mode!=='qte')return;
+ const q=G.qte,rect=$('qte').getBoundingClientRect();
+ const ratio=Math.min(1.5,window.devicePixelRatio||1),w=Math.max(1,Math.floor(rect.width*ratio)),h=Math.max(1,Math.floor(rect.height*ratio));
+ if(w!==qteEyeLastW||h!==qteEyeLastH){qteEyeCanvas.width=w;qteEyeCanvas.height=h;qteEyeLastW=w;qteEyeLastH=h;}
+ const c=qteEyeCtx,t=performance.now()/1000,phone=rect.width<900;
+ q.eyeX+=(q.eyeTx-q.eyeX)*.09;q.eyeY+=(q.eyeTy-q.eyeY)*.09;
+ c.clearRect(0,0,w,h);
+ const cx=phone?w*.5:w*.285,cy=phone?h*.245:h*.53;
+ const scale=phone?Math.min(w/470,h/860)*.96:Math.min(w/1250,h/950)*1.68;
+ c.save();c.translate(cx,cy);
+ // The grasp tightens, even when the player does not move. The eye tracks the pointer.
+ const squeeze=q.stage===0?.11:q.stage===1?.40:.68;
+ const gasp=Math.min(1,Math.max(0,1-q.timer/7.3));
+ const flex=clamp(squeeze+Math.sin(t*3)*.065+q.miss*.095+gasp*.04,0,.88);
+ const reach=1+Math.sin(t*2.2)*.045+q.stage*.09;
+ c.rotate(Math.sin(t*1.7)*.06);
+ const halo=c.createRadialGradient(0,0,8,0,0,260*scale);
+ halo.addColorStop(0,'rgba(192,25,60,.36)');halo.addColorStop(.7,'rgba(66,3,19,.15)');halo.addColorStop(1,'rgba(0,0,0,0)');
+ c.fillStyle=halo;c.fillRect(-370*scale,-365*scale,740*scale,740*scale);
+ giantPalmEye(c,0,0,Math.max(.3,scale)*reach,1,t*8,flex,q.eyeX,q.eyeY);
+ // Chain-like tendons vibrate at the edges of the player screen.
+ c.restore();
+ c.fillStyle='rgba(208,37,59,'+(.04+.028*Math.sin(t*7))+')';c.fillRect(0,0,w,h);
+}
+
 function drawJumpscare(){const j=G.jump;if(!j)return;const c=jctx,meta=SCARE_META[j.type],t=j.t,d=j.duration,progress=clamp(t/d,0,1);
  const w=W,h=H;c.clearRect(0,0,w,h);
  const bg=c.createRadialGradient(w*.5,h*.49,2,w*.5,h*.49,Math.max(w,h)*.77);
@@ -1385,10 +1443,17 @@ function damage(d,reason){
   audioCue('hurt');subtitle(reason+' machucou você!',2.2);
  }
 } 
-function startQTE(reason){G.mode='qte';G.lastBreath=false;exitLock();G.qte={stage:0,timer:5.2,phase:0,steps:0,last:'',seq:Array.from({length:5},()=>1+rnd(3)),seqIdx:0,miss:0,reason};$('qte').classList.add('show');$('hud').classList.remove('show');$('mobile').classList.remove('on');setQTEStage(0);audioCue('rush');}
-function setQTEStage(n){const q=G.qte;if(!q)return;q.stage=n;q.timer=n===0?5.2:n===1?6.3:7.3;q.phase=0;q.steps=0;q.last='';q.seqIdx=0;q.miss=0;$('qteIndex').textContent='SEGUNDA CHANCE · '+(n+1)+' / 3';$('qteTitle').textContent=['QUEBRE O CONTATO','FORCE AS GARRAS','LIBERE A TRAVA'][n];$('qteDesc').textContent=['Aperte ESPAÇO quando o marcador estiver na faixa verde.','Alterne A e D oito vezes antes do tempo acabar.','Repita os cinco números usando 1, 2 e 3, antes do tempo acabar.'][n];$('qteBar').style.display=n===0?'block':'none';$('qteCount').style.display=n===1?'block':'none';$('qteSequence').style.display=n===2?'block':'none';$('qteCount').textContent='0 / 8';$('qteSequence').textContent=q.seq.map((v)=>String(v)).join('  ');$('qteButtons').innerHTML='';let bs=n===0?['ACERTAR']:n===1?['A','D']:['1','2','3'];for(let b of bs){let btn=document.createElement('button');btn.className='qteKey';btn.textContent=b;btn.addEventListener('pointerdown',e=>{e.preventDefault();qteInput(b==='ACERTAR'?' ':b.toLowerCase());});$('qteButtons').append(btn);}}
-function qteInput(key){let q=G.qte;if(G.mode!=='qte'||!q)return;audioCue('tap');if(q.stage===0){if(key!==' '&&key!=='enter')return;let v=(Math.sin(q.phase*5.1)+1)/2;if(v>.44&&v<.59){setQTEStage(1);}else{q.miss++;q.timer-=.6;if(q.miss>=3)failQTE();}}else if(q.stage===1){if(key!=='a'&&key!=='d')return;if(q.last===key){q.timer-=.15;return;}q.last=key;q.steps++;$('qteCount').textContent=q.steps+' / 8';if(q.steps>=8)setQTEStage(2);}else if(q.stage===2){if(!['1','2','3'].includes(key))return;if(Number(key)===q.seq[q.seqIdx]){q.seqIdx++;$('qteSequence').textContent=q.seq.map((v,i)=>i<q.seqIdx?'✓':String(v)).join('  ');if(q.seqIdx>=5)winQTE();}else{q.miss++;q.timer-=1.3;if(q.miss>=2)failQTE();}}}
-function failQTE(){const reason=G.qte?.reason||'O VÉU';G.qte=null;$('qte').classList.remove('show','released');startJumpscare(reason,true,'death');}
+function startQTE(reason){G.mode='qte';G.lastBreath=false;exitLock();G.qte={stage:0,timer:5.2,phase:0,steps:0,last:'',seq:Array.from({length:5},()=>1+rnd(3)),seqIdx:0,miss:0,reason,eyeX:0,eyeY:0,eyeTx:0,eyeTy:0,eyeStart:performance.now()/1000};$('qte').classList.remove('released');$('qte').classList.toggle('duplicata',reason==='A DUPLICATA');$('qte').classList.add('show');$('hud').classList.remove('show');$('mobile').classList.remove('on');setQTEStage(0);audioCue('rush');}
+function setQTEStage(n){const q=G.qte;if(!q)return;q.stage=n;q.timer=n===0?5.2:n===1?6.3:7.3;q.phase=0;q.steps=0;q.last='';q.seqIdx=0;q.miss=0;$('qteIndex').textContent='SEGUNDA CHANCE · '+(n+1)+' / 3';$('qteTitle').textContent=q.reason==='A DUPLICATA'?['DESVIE DO OLHO','ABRA OS DEDOS','SOLTE A MÃO'][n]:['QUEBRE O CONTATO','FORCE AS GARRAS','LIBERE A TRAVA'][n];
+$('qteDesc').textContent=q.reason==='A DUPLICATA'?[
+'O olho na palma segue cada movimento. Aperte ESPAÇO quando o marcador alcançar a faixa verde.',
+'A garra aperta mais forte! Alterne A e D oito vezes para afastar os dedos.',
+'O olho está observando: repita os cinco números usando 1, 2 e 3 antes que a mão se feche.'
+][n]:['Aperte ESPAÇO quando o marcador estiver na faixa verde.','Alterne A e D oito vezes antes do tempo acabar.','Repita os cinco números usando 1, 2 e 3, antes do tempo acabar.'][n];$('qteBar').style.display=n===0?'block':'none';$('qteCount').style.display=n===1?'block':'none';$('qteSequence').style.display=n===2?'block':'none';$('qteCount').textContent='0 / 8';$('qteSequence').textContent=q.seq.map((v)=>String(v)).join('  ');$('qteButtons').innerHTML='';let bs=n===0?['ACERTAR']:n===1?['A','D']:['1','2','3'];for(let b of bs){let btn=document.createElement('button');btn.className='qteKey';btn.textContent=b;btn.addEventListener('pointerdown',e=>{e.preventDefault();qteInput(b==='ACERTAR'?' ':b.toLowerCase());});$('qteButtons').append(btn);}}
+function qteInput(key){let q=G.qte;if(G.mode!=='qte'||!q)return;
+ if(q.reason==='A DUPLICATA'){q.eyeTx=key==='a'?-.92:key==='d'?.92:key==='1'?-.65:key==='2'?0:key==='3'?.65:(q.eyeTx>0?-.5:.5);q.eyeTy=key==='1'?-.4:key==='3'?.4:-.12;}
+ audioCue('tap');if(q.stage===0){if(key!==' '&&key!=='enter')return;let v=(Math.sin(q.phase*5.1)+1)/2;if(v>.44&&v<.59){setQTEStage(1);}else{q.miss++;q.timer-=.6;if(q.miss>=3)failQTE();}}else if(q.stage===1){if(key!=='a'&&key!=='d')return;if(q.last===key){q.timer-=.15;return;}q.last=key;q.steps++;$('qteCount').textContent=q.steps+' / 8';if(q.steps>=8)setQTEStage(2);}else if(q.stage===2){if(!['1','2','3'].includes(key))return;if(Number(key)===q.seq[q.seqIdx]){q.seqIdx++;$('qteSequence').textContent=q.seq.map((v,i)=>i<q.seqIdx?'✓':String(v)).join('  ');if(q.seqIdx>=5)winQTE();}else{q.miss++;q.timer-=1.3;if(q.miss>=2)failQTE();}}}
+function failQTE(){const reason=G.qte?.reason||'O VÉU';G.qte=null;$('qte').classList.remove('show','released','duplicata');startJumpscare(reason,true,'death');}
 function winQTE(){G.qte=null;G.mode='release';G.releaseTime=.73;G.health=47;G.stamina=100;G.battery=Math.max(G.battery,40);G.invuln=4.5;$('qte').classList.add('released');$('qteTitle').textContent='VOCÊ SE SOLTOU!';$('qteDesc').textContent='Corra para a próxima porta!';$('hud').classList.remove('show');$('mobile').classList.remove('on');let e=G.encounter;if(e){e.phase='end';e.time=0;}G.position.x=7.5;G.position.y=5.3;G.position.a=-Math.PI/2;G.injuryPulse=0;G.hidden=false;G.hideAngle=null;G.hiddenIn=null;$('hiding').classList.remove('show');flash=1.4;shake=18;say('VOCÊ ESCAPOU!','ESTA ERA SUA ÚNICA SEGUNDA CHANCE',3.5);subtitle('As mãos se soltam. Corra!',2.8);audioCue('pickup');tryLock();}
 function tickQTE(dt){let q=G.qte;if(!q)return;q.timer-=dt;q.phase+=dt;$('qteTimeBar').style.width=(clamp(q.timer/(q.stage===0?5.2:q.stage===1?6.3:7.3),0,1)*100)+'%';if(q.stage===0)$('qteCursor').style.left=((Math.sin(q.phase*5.1)+1)/2*99)+'%';if(q.timer<=0)failQTE();}
 function finishRushEncounter(e,ob){
@@ -1461,7 +1526,7 @@ function tickEncounter(dt,moving){const e=G.encounter;if(!e||e.type==='none'||e.
  }
 }
 const timed=[];function setTimeoutSafe(fn,sec){timed.push({fn,remaining:sec});}
-function update(dt){if(G.mode==='finale'){tickFinale(dt);return;}if(G.mode==='elevator'){tickElevator(dt);return;}if(G.mode==='jumpscare'){tickJumpscare(dt);return;}if(G.mode==='qte'){tickQTE(dt);return;}if(G.mode==='release'){G.releaseTime-=dt;if(G.releaseTime<=0){G.mode='playing';$('qte').classList.remove('show','released');$('hud').classList.add('show');$('mobile').classList.toggle('on',coarse);tryLock();}return;}if(G.mode!=='playing')return;dt=Math.min(dt,.055);runAtmosphere(dt);G.seconds+=dt;G.roomTime+=dt;G.invuln=Math.max(0,G.invuln-dt);G.injuryPulse=Math.max(0,G.injuryPulse-dt*1.4);noticeTTL-=dt;subtitleTTL-=dt;G.listenCd=Math.max(0,G.listenCd-dt);flash=Math.max(0,flash-dt*2.5);shake=Math.max(0,shake-dt*14);if(noticeTTL<0)$('notice').classList.remove('on');if(subtitleTTL<0)$('subtitle').classList.remove('on');for(let i=timed.length-1;i>=0;i--){timed[i].remaining-=dt;if(timed[i].remaining<=0){timed.splice(i,1)[0].fn();}}
+function update(dt){if(G.mode==='finale'){tickFinale(dt);return;}if(G.mode==='elevator'){tickElevator(dt);return;}if(G.mode==='jumpscare'){tickJumpscare(dt);return;}if(G.mode==='qte'){tickQTE(dt);return;}if(G.mode==='release'){G.releaseTime-=dt;if(G.releaseTime<=0){G.mode='playing';$('qte').classList.remove('show','released','duplicata');$('hud').classList.add('show');$('mobile').classList.toggle('on',coarse);tryLock();}return;}if(G.mode!=='playing')return;dt=Math.min(dt,.055);runAtmosphere(dt);G.seconds+=dt;G.roomTime+=dt;G.invuln=Math.max(0,G.invuln-dt);G.injuryPulse=Math.max(0,G.injuryPulse-dt*1.4);noticeTTL-=dt;subtitleTTL-=dt;G.listenCd=Math.max(0,G.listenCd-dt);flash=Math.max(0,flash-dt*2.5);shake=Math.max(0,shake-dt*14);if(noticeTTL<0)$('notice').classList.remove('on');if(subtitleTTL<0)$('subtitle').classList.remove('on');for(let i=timed.length-1;i>=0;i--){timed[i].remaining-=dt;if(timed[i].remaining<=0){timed.splice(i,1)[0].fn();}}
  const p=G.position;let forward=(keys.w||keys.arrowup?1:0)-(keys.s||keys.arrowdown?1:0)-joy.y,side=(keys.d?1:0)-(keys.a?1:0)+joy.x;
  const turning=(keys.arrowright?1:0)-(keys.arrowleft?1:0),rot=turning*dt*2.35;p.a=normAngle(p.a+rot);
  const mag=Math.max(1,Math.hypot(forward,side));forward/=mag;side/=mag;
@@ -1760,7 +1825,7 @@ function renderWorld(){let p=G.position,t=G.roomTime;
 }
 function render(){if(G.mode==='finale'){drawFinale();return;}if(G.mode==='menu'){let grad=ctx.createLinearGradient(0,0,W,H);grad.addColorStop(0,'#111916');grad.addColorStop(.6,'#202b2b');grad.addColorStop(1,'#030708');ctx.fillStyle=grad;ctx.fillRect(0,0,W,H);let horizon=H*.49,ww=W*.42,center=W*.72;for(let i=9;i>=0;i--){let s=i/9;ctx.strokeStyle=`rgba(162,148,118,${.08+s*.29})`;ctx.lineWidth=3;ctx.strokeRect(center-ww*s*.5,horizon-H*.44*s,ww*s,H*.88*s);}let im=sprite('door',1);ctx.globalAlpha=.75;ctx.drawImage(im,center-W*.14,H*.14,W*.28,H*.73);ctx.globalAlpha=1;let red=ctx.createRadialGradient(center,horizon,20,center,horizon,H*.6);red.addColorStop(0,'#aa23292b');red.addColorStop(1,'transparent');ctx.fillStyle=red;ctx.fillRect(0,0,W,H);return;}
  if(!G.map?.length)return;ctx.save();if(shake>0)ctx.translate(rand(-shake,shake)*dpr,rand(-shake,shake)*dpr);renderWorld();if(G.mode==='elevator')drawElevator();ctx.restore();}
-function loop(ts){let dt=last?Math.min(.075,(ts-last)/1000):.016;last=ts;frame++;update(dt);updateRecordedBed();render();if(G.mode==='jumpscare')drawJumpscare();requestAnimationFrame(loop);}requestAnimationFrame(loop);
+function loop(ts){let dt=last?Math.min(.075,(ts-last)/1000):.016;last=ts;frame++;update(dt);updateRecordedBed();render();if(G.mode==='jumpscare')drawJumpscare();if(G.mode==='qte')drawDuplicataGrip();requestAnimationFrame(loop);}requestAnimationFrame(loop);
 function tryLock(){if(!coarse&&G.mode==='playing'){try{canvas.requestPointerLock?.();}catch(e){}}}function exitLock(){try{if(document.pointerLockElement)document.exitPointerLock();}catch(e){}}
 addEventListener('keydown',e=>{const key=e.key.toLowerCase();if([' ','arrowup','arrowdown','arrowleft','arrowright','tab'].includes(key))e.preventDefault();if(G.mode==='qte'){if(!e.repeat)qteInput(key);return;}keys[key]=true;if(e.repeat)return;if(G.mode==='menu'&&key==='enter'){startGame();return;}if(key==='escape'||key==='p'){if(G.mode==='playing'||G.mode==='paused')pause();return;}if(G.mode!=='playing')return;if(key==='c'){toggleCrouch();return;}if(key==='v'){listenDoor();return;}if(G.training&&key==='t'){trainingFinish();return;}if(G.training&&key==='r'){createRoom(G.room);G.health=Math.max(80,G.health);return;}if(key==='e'||key===' ')interaction();if(key==='f')torch();if(key==='q')heal();if(key==='m')soundToggle();});addEventListener('keyup',e=>{keys[e.key.toLowerCase()]=false;});addEventListener('blur',()=>{keys=Object.create(null);touchRunning=false;if(G.mode==='playing')pause();});
 addEventListener('mousemove',e=>{if(G.mode==='playing'&&document.pointerLockElement===canvas&&!G.hidden)G.position.a=normAngle(G.position.a+clamp(e.movementX,-170,170)*.00255);});canvas.addEventListener('click',()=>{if(G.mode==='playing'&&!coarse&&!document.pointerLockElement)tryLock();});
