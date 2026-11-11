@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover"><meta name="theme-color" content="#060a0d">
 <title>Hotel Grand Atrium — Capítulo I: A Porta 050</title>
-<meta name="game-version" content="1.2.0">
+<meta name="game-version" content="1.3.0">
 <meta name="description" content="Hotel Grand Atrium: jogo de terror retrô em primeira pessoa. Explore 50 portas, descubra criaturas, enfrente sustos e sobreviva ao primeiro capítulo.">
 <style>
 :root{--paper:#e8e4d6;--faint:#9ca7a0;--gold:#d9b57b;--red:#ef5659;--mint:#b7ead4;--line:#d6d7bd30}*{box-sizing:border-box}html,body{width:100%;height:100%;margin:0;overflow:hidden;background:#050808;color:var(--paper);font-family:Inter,"Segoe UI",Arial,sans-serif;user-select:none;-webkit-user-select:none;touch-action:none}button{font:inherit;color:inherit;cursor:pointer}#view{position:fixed;inset:0;width:100%;height:100%;object-fit:cover;display:block;touch-action:none}#grain,#vignette,#hurtFx,#darkFx{pointer-events:none;position:fixed;inset:0}#grain{z-index:4;opacity:.10;mix-blend-mode:screen;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)' opacity='.75'/%3E%3C/svg%3E");animation:grain .18s steps(2) infinite alternate}@keyframes grain{from{transform:translate(0,0)}to{transform:translate(1%,-1%)}}#vignette{z-index:3;background:radial-gradient(ellipse at 50% 49%,transparent 24%,#0005 73%,#000e 100%)}#hurtFx{z-index:5;opacity:0;transition:opacity .22s;background:radial-gradient(ellipse at center,transparent 22%,#81050d77 61%,#dd0a18b0 100%)}#darkFx{z-index:3;opacity:0;transition:opacity .6s;background:radial-gradient(ellipse at 50% 51%,transparent 8%,#030508a8 60%,#010202ee 100%)}
@@ -1073,7 +1073,7 @@ function scareKind(reason,fatal){let k=SCARE_META[reason]?reason:(SCARE_REASON[r
 function startJumpscare(reason,fatal=false,next='resume'){
  const type=scareKind(reason,fatal);
  // The world freezes; no more damage can occur during the cinematic.
- G.jump={type,reason,fatal,next,t:0,duration:fatal?1.48:1.0};
+ G.jump={type,reason,fatal,next,t:0,duration:type==='fakeDeath'?2.45:type==='fakeHit'?1.75:(fatal?1.48:1.0),impactPlayed:false,grabPlayed:false};
  G.mode='jumpscare';G.sprinting=false;keys=Object.create(null);touchRunning=false;resetJoy?.();
  jumpCanvas.style.display='block';
  $('echoWarning').style.display='none';$('interaction').classList.remove('show');
@@ -1081,7 +1081,16 @@ function startJumpscare(reason,fatal=false,next='resume'){
  $('hud').classList.remove('show');$('mobile').classList.remove('on');$('trainingCard').classList.remove('on');
  playJumpSound(type,fatal);try{if(coarse&&navigator.vibrate)navigator.vibrate(fatal?[95,25,155,35,90]:[70,25,95]);}catch(_){}
 }
-function tickJumpscare(dt){const j=G.jump;if(!j)return;j.t+=Math.min(dt,.05);if(j.t<j.duration)return;
+function tickJumpscare(dt){const j=G.jump;if(!j)return;j.t+=Math.min(dt,.05);
+ if((j.type==='fakeHit'||j.type==='fakeDeath')&&j.t/j.duration>.47&&!j.impactPlayed){
+  j.impactPlayed=true;shake=Math.max(shake,12);audioCue('rush');
+  try{if(coarse&&navigator.vibrate)navigator.vibrate([50,25,80]);}catch(_){}
+ }
+ if(j.type==='fakeDeath'&&j.t/j.duration>.76&&!j.grabPlayed){
+  j.grabPlayed=true;audioCue('hurt');shake=Math.max(shake,20);
+  try{if(coarse&&navigator.vibrate)navigator.vibrate([95,25,135]);}catch(_){}
+ }
+ if(j.t<j.duration)return;
  jumpCanvas.style.display='none';G.jump=null;
  if(j.next==='qte'){startQTE(j.reason);return;}
  if(j.next==='death'){showEnd(false,j.reason);return;}
@@ -1196,6 +1205,139 @@ function drawScareCreature(c,type,fatal,t){
  }
  c.restore();
 }
+
+/* DUPLICATA 1.3: a wooden door splits, then a many-jointed forearm and a
+   single giant watching eye erupt from the darkness inside the door. */
+function creatureEase(a,b,v){let q=clamp((v-a)/(b-a),0,1);return q*q*(3-2*q);}
+function giantPalmEye(c,x,y,size,open,t,grasp){
+ c.save();c.translate(x,y);c.rotate(Math.sin(t*8)*.075);c.scale(size,size);
+ const skin=c.createLinearGradient(-90,-75,100,150);
+ skin.addColorStop(0,'#c0a7a2');skin.addColorStop(.32,'#715d61');skin.addColorStop(.71,'#362027');skin.addColorStop(1,'#100d14');
+ // Tendons in the wrist run back into the black doorway.
+ c.beginPath();c.moveTo(-45,64);c.bezierCurveTo(-58,156,-32,196,-46,340);c.lineTo(58,340);
+ c.bezierCurveTo(33,188,65,157,51,64);c.closePath();
+ c.fillStyle='#281b24';c.fill();c.strokeStyle='#a17e7e';c.lineWidth=5;c.stroke();
+ for(let i=0;i<8;i++){
+  const x0=(i-3.5)*10;
+  c.beginPath();c.moveTo(x0,105);c.bezierCurveTo(x0*1.5,165+Math.sin(t*2+i)*7,x0*1.4,242,x0*1.2,316);
+  c.lineWidth=i%3===0?3.5:1.5;c.strokeStyle=i%2?'#b47375':'#542f3d';c.stroke();
+ }
+ // Individual fingers curl around the viewfinder at the end of the attack.
+ const fingers=[
+  {a:-75,b:-98,len:155,w:21},
+  {a:-41,b:-132,len:187,w:24},
+  {a:-4,b:-143,len:203,w:25},
+  {a:33,b:-135,len:182,w:23},
+  {a:72,b:-91,len:151,w:25}
+ ];
+ for(let i=0;i<fingers.length;i++){
+  const f=fingers[i],q=(i-2),flex=grasp*(46+Math.abs(q)*18);
+  const x0=f.a*.76,y0=-48+Math.abs(q)*10;
+  const bendX=f.b+q*8+(q>0?-1:1)*flex*.45;
+  const bendY=-70-f.len*.35+flex*.35;
+  const tipX=f.b+q*7+(q>0?-1:1)*flex*1.25;
+  const tipY=-35-f.len+flex*1.8;
+  c.lineCap='round';c.lineJoin='round';
+  c.beginPath();c.moveTo(x0,y0);c.quadraticCurveTo((x0+bendX)/2-14,bendY,bendX,bendY);
+  c.quadraticCurveTo(bendX+q*12,tipY+18,tipX,tipY);
+  c.strokeStyle='#100910';c.lineWidth=f.w+10;c.stroke();
+  c.strokeStyle=i%2?'#957a7d':'#ad9692';c.lineWidth=f.w;c.stroke();
+  c.beginPath();c.moveTo(x0+4,y0);c.quadraticCurveTo(bendX+7,bendY+2,tipX+3,tipY+7);
+  c.strokeStyle='#52404a';c.lineWidth=6;c.stroke();
+  c.beginPath();c.moveTo(tipX-8,tipY+3);c.quadraticCurveTo(tipX+3,tipY-31-flex*.15,tipX+11,tipY-45-flex*.27);
+  c.lineTo(tipX+6,tipY+9);c.closePath();c.fillStyle='#ece0cf';c.fill();
+  // Two gnarled bony knuckles for each finger.
+  scareCircle(c,bendX,bendY,11,9,'#6c525a','#c3a7a0',2.5);
+ }
+ // The single oversized palm completely replaces the old door-monster face.
+ c.beginPath();c.moveTo(-85,-49);c.bezierCurveTo(-108,-12,-89,65,-45,100);
+ c.bezierCurveTo(-12,121,43,110,70,80);c.bezierCurveTo(98,50,104,-15,79,-56);
+ c.bezierCurveTo(45,-109,-48,-117,-85,-49);c.closePath();
+ c.fillStyle=skin;c.fill();c.lineWidth=8;c.strokeStyle='#d1aba4';c.stroke();
+ c.beginPath();c.ellipse(0,-6,67,82,0,0,TAU);c.strokeStyle='#170c14';c.lineWidth=8;c.stroke();
+ c.beginPath();c.ellipse(0,-6,59,74,0,0,TAU);c.strokeStyle='#b05768';c.lineWidth=3;c.stroke();
+ for(let i=0;i<20;i++){
+  const a=i*TAU/20,xx=Math.cos(a)*67,yy=-7+Math.sin(a)*80;
+  c.beginPath();c.moveTo(xx,yy);c.quadraticCurveTo(xx*1.24,-7+(yy+7)*1.25,xx*1.49,-7+(yy+7)*1.32);
+  c.lineWidth=i%3===0?3.3:1.6;c.strokeStyle=i%2?'#bb6676':'#36202a';c.stroke();
+ }
+ const slit=Math.max(.055,open);
+ c.save();c.beginPath();c.ellipse(0,-14,55,48*slit,0,0,TAU);c.clip();
+ c.fillStyle='#08040a';c.fillRect(-60,-70,120,120);
+ const iris=c.createRadialGradient(8,-12,5,0,-14,51);
+ iris.addColorStop(0,'#151322');iris.addColorStop(.45,'#f7bfc6');
+ iris.addColorStop(.72,'#ce364d');iris.addColorStop(1,'#520b25');
+ c.fillStyle=iris;c.beginPath();c.ellipse(0,-13,47,42*slit,0,0,TAU);c.fill();
+ for(let i=0;i<30;i++){let a=i*TAU/30;
+  c.beginPath();c.moveTo(Math.cos(a)*13,-13+Math.sin(a)*11*slit);
+  c.lineTo(Math.cos(a)*(29+i%4*3),-13+Math.sin(a)*(29+i%4*3)*slit);
+  c.strokeStyle=i%3?'#5d1431':'#ffe2d7';c.lineWidth=1.8;c.stroke();
+ }
+ c.beginPath();c.ellipse(0,-13,16+grasp*5,27*slit,0,0,TAU);c.fillStyle='#07030a';c.fill();
+ scareCircle(c,-10,-29,9,7,'#fff4d9');c.restore();
+ c.beginPath();c.ellipse(0,-14,57,49*slit,0,0,TAU);c.lineWidth=8;c.strokeStyle='#2a111d';c.stroke();
+ c.beginPath();c.moveTo(-53,-14);c.quadraticCurveTo(0,-14-48*slit,53,-14);
+ c.lineWidth=8;c.strokeStyle='#d3aaa6';c.stroke();
+ c.beginPath();c.moveTo(-53,-14);c.quadraticCurveTo(0,-14+47*slit,53,-14);
+ c.strokeStyle='#a86b77';c.stroke();
+ for(let i=0;i<4;i++){const v=i*24-38;scareStroke(c,[[v,61],[v+8,84],[v+3,92]],'#201820',2);}
+ c.restore();
+}
+function drawDuplicataDoorAttack(c,j){
+ const t=clamp(j.t/j.duration,0,1),fatal=j.type==='fakeDeath',w=W,h=H;
+ const unit=Math.min(w/650,h/770);
+ c.save();c.translate(w*.5,h*.47);c.scale(unit,unit);
+ // Wide frame, floor and an impossible depth beyond the door.
+ const wall=c.createLinearGradient(0,-365,0,390);
+ wall.addColorStop(0,'#141718');wall.addColorStop(.7,'#25211e');wall.addColorStop(1,'#080607');
+ c.fillStyle=wall;c.fillRect(-600,-440,1200,970);
+ const dark=c.createRadialGradient(0,0,5,0,0,360);dark.addColorStop(0,'#19030a');dark.addColorStop(.38,'#0a0409');dark.addColorStop(1,'#080809');
+ c.fillStyle=dark;c.fillRect(-254,-342,508,675);
+ c.strokeStyle='#8c735b';c.lineWidth=27;c.strokeRect(-246,-335,492,657);
+ c.strokeStyle='#30231d';c.lineWidth=11;c.strokeRect(-229,-317,458,622);
+ // Draw the door halves swinging away, leaving a crack of darkness.
+ const open=creatureEase(.05,.27,t),left=-219-open*176,right=0+open*176;
+ for(let side of [-1,1]){
+  const x=side<0?left:right;
+  c.save();c.translate(x,-304);c.transform(1,0,side*.14*open,1,0,0);
+  const panel=c.createLinearGradient(0,0,219,0);panel.addColorStop(0,'#281610');panel.addColorStop(.5,'#775039');panel.addColorStop(1,'#301a14');
+  c.fillStyle=panel;c.fillRect(0,0,219,607);
+  c.lineWidth=8;c.strokeStyle='#ac805d';c.strokeRect(6,5,207,597);
+  for(let v=0;v<4;v++){c.lineWidth=5;c.strokeStyle=v%2?'#341e19':'#8c6148';c.strokeRect(28,35+v*141,162,118);}
+  for(let v=0;v<12;v++){c.beginPath();c.moveTo(23+v*17,22);c.bezierCurveTo(14+v*17,197,34+v*17,374,21+v*17,594);
+    c.lineWidth=v%3===0?3:1;c.strokeStyle=v%2?'#321d19':'#9a6b4f';c.stroke();}
+  if(side<0){scareCircle(c,194,18,10,10,'#d4b177','#362119',3);}
+  else{scareCircle(c,25,18,10,10,'#d4b177','#362119',3);}
+  c.restore();
+ }
+ // The arm stretches out of the doorway, then its enormous palm and eye rush at the player.
+ const advance=creatureEase(.19,.61,t);
+ const snap=creatureEase(.47,.73,t);
+ const recoil=fatal?1:1-creatureEase(.76,1,t);
+ const grasp=fatal?creatureEase(.67,.88,t):creatureEase(.59,.69,t)*.35;
+ const grow=(.24+advance*.65+snap*.75)*recoil;
+ if(grow>.01){
+  const handX=Math.sin(t*15)*8*advance;
+  const handY=128-advance*145-snap*36;
+  const eyeOpen=creatureEase(.28,.54,t);
+  c.save();
+  if(fatal&&t>.81){c.translate(Math.sin(t*60)*13,Math.cos(t*44)*12);}
+  giantPalmEye(c,handX,handY,grow,eyeOpen,t*11,grasp);
+  c.restore();
+ }
+ if(fatal&&t>.78){
+  const darken=creatureEase(.78,.96,t);
+  c.fillStyle='rgba(6,1,5,'+(darken*.91)+')';c.fillRect(-610,-450,1220,1000);
+  const red=c.createRadialGradient(0,-15,8,0,-15,160);
+  red.addColorStop(0,'rgba(255,20,52,'+(darken*.42)+')');red.addColorStop(1,'rgba(250,12,39,0)');
+  c.fillStyle=red;c.fillRect(-190,-215,380,420);
+ }
+ if(!fatal&&t>.62){
+  c.fillStyle='rgba(248,30,53,'+(Math.sin(t*62)**2*.15)+')';c.fillRect(-520,-425,1040,890);
+ }
+ c.restore();
+}
+
 function drawJumpscare(){const j=G.jump;if(!j)return;const c=jctx,meta=SCARE_META[j.type],t=j.t,d=j.duration,progress=clamp(t/d,0,1);
  const w=W,h=H;c.clearRect(0,0,w,h);
  const bg=c.createRadialGradient(w*.5,h*.49,2,w*.5,h*.49,Math.max(w,h)*.77);
@@ -1203,7 +1345,8 @@ function drawJumpscare(){const j=G.jump;if(!j)return;const c=jctx,meta=SCARE_MET
  // A bright first-frame flash, a snap zoom, and a violent but finite camera shake.
  const quiver=(j.fatal?18:11)*(1-progress*.65),seed=Math.sin((frame+1)*97.12),dx=seed*quiver,dy=Math.cos(frame*31.21)*quiver;
  const fit=Math.min(w/650,h/770);const zoom=(.80+.91*(1-Math.pow(1-Math.min(1,progress*6),3))+Math.sin(progress*29)*.048)*fit;
- c.save();c.translate(w*.5+dx,h*.47+dy);c.scale(zoom,zoom);drawScareCreature(c,j.type,j.fatal,j.t);c.restore();
+ if(j.type==='fakeHit'||j.type==='fakeDeath')drawDuplicataDoorAttack(c,j);
+ else{c.save();c.translate(w*.5+dx,h*.47+dy);c.scale(zoom,zoom);drawScareCreature(c,j.type,j.fatal,j.t);c.restore();}
  // Structured chromatic ghosting for an authentic 90s horror-camera glitch.
  if(progress<.84){for(let i=0;i<10;i++){let y=((i*241+frame*23)%h),band=3+(i%3)*5;
   c.fillStyle=i%3===0?'rgba(255,76,83,.23)':i%3===1?'rgba(113,228,241,.16)':'rgba(0,0,0,.28)';c.fillRect(0,y,w,band);
@@ -1473,8 +1616,91 @@ function animatedMonsterSprite(kind,tm,phase=''){
   if(blink){rr(p,-141,-90,282,83*blink,10,'#2c101a');rr(p,-141,90-83*blink,282,83*blink,10,'#2c101a');}
   p.restore();
  }
+ monsterAnatomy(p,kind,tm,phase);
  movingMonsterCache.set(kind,{canvas:c,frame,phase});return c;
 }
+
+/* Additional anatomy rendered on top of the animated monster silhouettes.
+   The old 22-fps sprite cache is retained for performance on mobile. */
+function monsterAnatomy(p,kind,tm,phase){
+ const t=tm,flow=Math.sin(t*3),pulse=Math.sin(t*5);
+ p.save();p.lineJoin='round';p.lineCap='round';
+ if(kind==='echo'){
+  // Two sets of crooked ribs, bone hooks and extra mouths that open while listening.
+  for(let side of [-1,1])for(let i=0;i<6;i++){
+   let y=223+i*19;
+   p.beginPath();p.moveTo(178+side*18,y);p.quadraticCurveTo(180+side*(55+i*2),y-11,180+side*(61+i*3),y-28);
+   p.strokeStyle=i%2?'#d8d1c8':'#657878';p.lineWidth=5-i*.25;p.stroke();
+  }
+  for(let i=0;i<11;i++){
+   let x=128+i*10,y=120+Math.sin(i*2+t*1.3)*4;
+   p.beginPath();p.moveTo(x,y);p.lineTo(x+((i%2)?8:-8),y-18-i%3*6);p.lineWidth=3;p.strokeStyle='#d9e2d8';p.stroke();
+  }
+  for(let side of [-1,1]){
+   ell(p,180+side*25,125,22,28,'#080b10');ell(p,180+side*(26+Math.sin(t*1.7)*3),123,5,12,'#a8f0e0');
+  }
+  ell(p,180,178,16,21+Math.abs(flow)*10,'#08070d');
+  for(let i=0;i<9;i++)line(p,168+i*3,164,168+i*3,188,'#edebdd',1.5);
+ }else if(kind==='rush'){
+  // New branches of tendrils, claws dragging behind its vibrating shadow.
+  for(let i=0;i<11;i++){
+   let a=i*TAU/11,rr=125+Math.sin(t*8+i)*15,x=180+Math.cos(a)*rr,y=209+Math.sin(a)*rr;
+   p.beginPath();p.moveTo(180+Math.cos(a)*55,190+Math.sin(a)*65);
+   p.quadraticCurveTo(x+Math.cos(t*3+i)*15,y,x+Math.cos(a)*29,y+Math.sin(a)*34);
+   p.strokeStyle=i%2?'#7c2138':'#120d17';p.lineWidth=i%2?5:8;p.stroke();
+   for(let k=0;k<3;k++)line(p,x,y,x+(k-1)*15,y+23+Math.sin(t*13+k+i)*7,'#dfc7c2',2.7);
+  }
+  for(let i=0;i<7;i++){
+   let x=131+i*16,y=152+Math.cos(i*3+t*2)*13;
+   ell(p,x,y,5,9,'#fff4df');ell(p,x+Math.sin(t*3)*1.6,y,2,5,'#ff3e58');
+  }
+ }else if(kind==='chaser'){
+  // Arched dorsal spines, jagged shoulder plates and dripping jaw.
+  for(let side of [-1,1])for(let i=0;i<5;i++){
+   let x=180+side*(53+i*4),y=185+i*20;
+   p.beginPath();p.moveTo(x,y);p.lineTo(x+side*(24+i*4),y-18);p.lineTo(x+side*8,y+13);
+   p.closePath();p.fillStyle=i%2?'#be9b93':'#6f3440';p.fill();
+  }
+  for(let i=0;i<9;i++){
+   let x=147+i*8,y=166;
+   p.beginPath();p.moveTo(x,y);p.quadraticCurveTo(x+2,186,x+Math.sin(t*8+i)*7,202+i%3*14);
+   p.strokeStyle=i%2?'#eb7984':'#9a1d32';p.lineWidth=2;p.stroke();
+  }
+  for(let side of [-1,1]){ell(p,180+side*28,107,16,7,'#20050d');ell(p,180+side*27,106,5,5,'#ffb1b1');}
+  for(let i=0;i<7;i++)line(p,154+i*8,170,158+i*8,198,'#fae7d2',2.5);
+ }else if(kind==='whisper'){
+  // Creeping mist fingers and a crown of broken candle wax.
+  p.globalAlpha=.75;
+  for(let i=0;i<13;i++){
+   const xx=70+i*19,yy=148+Math.sin(t*1.9+i)*18;
+   p.beginPath();p.moveTo(xx,yy);p.bezierCurveTo(xx-25,yy+45,xx+Math.cos(t+i)*35,yy+95,xx+Math.sin(t*2+i)*18,yy+165);
+   p.lineWidth=i%3===0?6:3;p.strokeStyle=i%2?'#82dddb':'#527f95';p.stroke();
+  }
+  p.globalAlpha=1;
+  for(let i=0;i<7;i++){
+   let x=126+i*17,y=102-i%3*9;
+   p.beginPath();p.moveTo(x,y+12);p.quadraticCurveTo(x-9,y-12,x+Math.sin(t+i)*3,y-30-i%4*5);
+   p.lineWidth=4;p.strokeStyle='#e7e7d9';p.stroke();
+  }
+  ell(p,180,167,16,29,'#120b13');
+  ell(p,150,131,8,16,'#430c20');ell(p,210,131,8,16,'#430c20');
+ }else if(kind==='eye'){
+  // Dozens of fine veins and small parasitic eyes attached to the main iris.
+  for(let i=0;i<35;i++){
+   let a=i*TAU/35;
+   let x=180+Math.cos(a)*128,y=215+Math.sin(a)*76;
+   p.beginPath();p.moveTo(x,y);p.quadraticCurveTo(180+Math.cos(a)*147+Math.sin(t+i)*6,215+Math.sin(a)*92,180+Math.cos(a)*167,215+Math.sin(a)*112);
+   p.strokeStyle=i%3?'#c05972':'#53213c';p.lineWidth=i%4===0?3.4:1.7;p.stroke();
+  }
+  for(let i=0;i<7;i++){
+   let a=i*TAU/7+t*.1,x=180+Math.cos(a)*152,y=215+Math.sin(a)*112;
+   ell(p,x,y,9,6,'#c1a6a6');ell(p,x+Math.sin(t*.9+i)*2,y,3.5,4,'#1a0617');
+  }
+  p.globalAlpha=.9;ell(p,159+Math.sin(t*.6)*10,175,11,5,'#fff5e4');p.globalAlpha=1;
+ }
+ p.restore();
+}
+
 function drawVeilClosetStare(){
  if(!G.hidden||G.encounter?.type!=='rush'||G.encounter.phase!=='staring')return;
  const e=G.encounter,tt=G.roomTime,progress=clamp((2.8-e.time)/.55,0,1),retreat=clamp(e.time/.35,0,1);
