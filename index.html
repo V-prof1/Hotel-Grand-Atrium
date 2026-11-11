@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover"><meta name="theme-color" content="#060a0d">
 <title>Hotel Grand Atrium — Capítulo I: A Porta 050</title>
-<meta name="game-version" content="1.1.0">
+<meta name="game-version" content="1.2.0">
 <meta name="description" content="Hotel Grand Atrium: jogo de terror retrô em primeira pessoa. Explore 50 portas, descubra criaturas, enfrente sustos e sobreviva ao primeiro capítulo.">
 <style>
 :root{--paper:#e8e4d6;--faint:#9ca7a0;--gold:#d9b57b;--red:#ef5659;--mint:#b7ead4;--line:#d6d7bd30}*{box-sizing:border-box}html,body{width:100%;height:100%;margin:0;overflow:hidden;background:#050808;color:var(--paper);font-family:Inter,"Segoe UI",Arial,sans-serif;user-select:none;-webkit-user-select:none;touch-action:none}button{font:inherit;color:inherit;cursor:pointer}#view{position:fixed;inset:0;width:100%;height:100%;object-fit:cover;display:block;touch-action:none}#grain,#vignette,#hurtFx,#darkFx{pointer-events:none;position:fixed;inset:0}#grain{z-index:4;opacity:.10;mix-blend-mode:screen;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)' opacity='.75'/%3E%3C/svg%3E");animation:grain .18s steps(2) infinite alternate}@keyframes grain{from{transform:translate(0,0)}to{transform:translate(1%,-1%)}}#vignette{z-index:3;background:radial-gradient(ellipse at 50% 49%,transparent 24%,#0005 73%,#000e 100%)}#hurtFx{z-index:5;opacity:0;transition:opacity .22s;background:radial-gradient(ellipse at center,transparent 22%,#81050d77 61%,#dd0a18b0 100%)}#darkFx{z-index:3;opacity:0;transition:opacity .6s;background:radial-gradient(ellipse at 50% 51%,transparent 8%,#030508a8 60%,#010202ee 100%)}
@@ -74,6 +74,31 @@
 #finaleControls{pointer-events:auto;position:absolute;bottom:max(36px,env(safe-area-inset-bottom));left:50%;transform:translateX(-50%);display:none;gap:12px;flex-wrap:wrap;justify-content:center;width:min(94vw,600px)}
 #finaleControls.on{display:flex}#finaleControls button{padding:15px 20px;min-height:48px;background:#e7dfc7;color:#161b1b;border:1px solid #f6efdb;font:900 12px Consolas,monospace;letter-spacing:.1em;cursor:pointer}#finaleControls button:last-child{background:#141719;color:#e7dfc7;border-color:#8d8171}
 @media(max-width:680px){#objectiveTrack{top:154px;font-size:10px;max-width:93vw;padding:6px 9px;letter-spacing:.04em}#skipFinale{top:15px;right:10px;font-size:10px}}
+/* Arquivo de morte exibido apenas após a derrota: contraste e leitura em mobile. */
+#mainOverlay.deathScreen{background:radial-gradient(ellipse at 25% 45%,#2b1017ef,#070a0bfa 72%);overflow-y:auto}
+#mainOverlay.deathScreen .panel{width:min(720px,100%);margin:auto 0}
+.deathDossier{border:1px solid #ad46545b;border-left:3px solid #d35b62;background:linear-gradient(118deg,#2a131bd9,#0c1012eb);padding:clamp(15px,2.6vw,23px);margin:16px 0;box-shadow:inset 0 0 45px #0006}
+.deathDossierTop{display:flex;justify-content:space-between;gap:15px;flex-wrap:wrap;color:#bc9695;font:800 10px/1.5 Consolas,monospace;letter-spacing:.12em}
+.deathEntity{font:900 clamp(28px,4.5vw,48px)/1.04 Georgia,serif;letter-spacing:.025em;color:#ffa0a0;margin:11px 0;text-shadow:0 0 23px #a5243549}
+.deathQuote{color:#f0d7d1;font:italic clamp(16px,2.3vw,21px)/1.55 Georgia,serif;margin:6px 0 16px}
+.deathAdvice{border-top:1px solid #bb667044;padding-top:11px}
+.deathAdvice>span{color:#c89c79;font-size:9px;font-weight:900;letter-spacing:.19em}
+.deathAdvice p{color:#d8dcd1;line-height:1.6;font-size:14px;margin:7px 0 0}
+#mainOverlay.deathScreen .endTitle{font-size:clamp(32px,5vw,56px);margin:9px 0}
+#mainOverlay.deathScreen .endBody{font-size:13px;margin:8px 0}
+#mainOverlay.deathScreen .bigStat{font-size:32px;margin:8px 0}
+#mainOverlay.deathScreen .feature{margin:7px 0 13px;line-height:1.5}
+@media(max-width:620px){
+ #mainOverlay.deathScreen{padding:clamp(14px,4vw,25px);align-items:flex-start}
+ #mainOverlay.deathScreen .panel{margin:auto 0}
+ .deathDossier{margin:12px 0;padding:13px}
+ .deathQuote{font-size:16px;line-height:1.4}
+ .deathAdvice p{font-size:12px}
+ #mainOverlay.deathScreen .bigStat{font-size:28px}
+ #mainOverlay.deathScreen .primary,#mainOverlay.deathScreen .outline{padding:12px 15px;min-width:unset}
+}
+@media(max-height:640px){#mainOverlay.deathScreen{align-items:flex-start}#mainOverlay.deathScreen .panel{margin:auto 0}}
+
 </style>
 <!-- Audio credits: https://opengameart.org/content/elevator-ding ; https://opengameart.org/content/old-elevator-door ; https://opengameart.org/content/ghostmonster-sounds ; https://opengameart.org/content/enemy-sounds ; https://opengameart.org/content/ambient-horror ; https://opengameart.org/content/mechanical-sounds ; https://opengameart.org/content/steps-in-wood-floor ; each CC0. Internet required for streamed recorded SFX; procedural offline fallback. -->
 </head>
@@ -452,11 +477,13 @@ function say(title,sub='',duration=2.6,danger=false){$('noticeTitle').textConten
 function subtitle(text,duration=2.5){$('subtitle').textContent=text;subtitleTTL=duration;$('subtitle').classList.add('on');}
 
 function startGame(){
+ $('mainOverlay').classList.remove('deathScreen');
  $('finaleUI').classList.remove('on');$('finaleControls').classList.remove('on');G.mode='menuPrompt';exitLock();$('trainingCard').classList.remove('on');$('hud').classList.remove('show');$('mobile').classList.remove('on');showSignal();
  $('menuPanel').innerHTML=`<div class="eyebrow">ANTES DE ENTRAR</div><h1 class="endTitle">VOCÊ QUER FAZER<br>O TUTORIAL?</h1><p class="endBody">É opcional. Após o elevador e a recepção, você irá para uma partida de treinamento com <b>sete salas</b>, pistas discretas de cada criatura, armários, portas falsas, chaves e lanternas. Pode pular quando quiser.</p><div class="buttons"><button class="primary" id="yesTrain">SIM · APRENDER</button><button class="outline" id="noTrain">NÃO · JOGAR DIRETO</button></div>`;
  $('mainOverlay').classList.remove('hidden');$('yesTrain').onclick=()=>beginGame(true);$('noTrain').onclick=()=>beginGame(false);
 }
 function beginGame(training=false){
+ $('mainOverlay').classList.remove('deathScreen');
  G.training=training;G.mode='elevator';G.health=100;G.stamina=100;G.battery=100;G.bandages=training?3:1;G.torch=true;G.seconds=0;G.lastBreath=true;flash=0;shake=0;G.qte=null;G.jump=null;jumpCanvas.style.display='none';G.injuryPulse=0;G.crouching=false;G.velF=G.velS=0;G.headBob=0;G.listenCd=0;touchRunning=false;timed.length=0;
  $('qte').classList.remove('show','released');$('mainOverlay').classList.add('hidden');$('hud').classList.add('show');$('mobile').classList.toggle('on',coarse);$('hiding').classList.remove('show');$('trainingCard').classList.remove('on');musicStart();startElevator();
 }
@@ -558,7 +585,294 @@ $('skipFinale').addEventListener('click',finishFinaleEarly);
 $('finaleAgain').addEventListener('click',()=>{if(G.mode==='finale')startGame();});
 $('finaleMenu').addEventListener('click',()=>{if(G.mode!=='finale')return;G.mode='menu';$('finaleUI').classList.remove('on');$('finaleControls').classList.remove('on');$('mainOverlay').classList.remove('hidden');$('menuPanel').innerHTML=`<div class="eyebrow">HOTEL GRAND ATRIUM · PARTE I</div><h1 class="endTitle">VOCÊ VOLTOU.</h1><p class="endBody">A porta 050 termina o primeiro capítulo. Ainda restam perguntas sem resposta.</p><div class="buttons"><button class="primary" id="playAgainAfterFinale">ENTRAR NO HOTEL</button></div>`;$('playAgainAfterFinale').onclick=startGame;});
 
-function showEnd(victory=false){G.mode=victory?'victory':'dead';exitLock();$('qte').classList.remove('show','released');$('hud').classList.remove('show');$('mobile').classList.remove('on');$('hiding').classList.remove('show');$('trainingCard').classList.remove('on');showSignal();const title=victory?'VOCÊ SAIU.':'O HOTEL TE ENCONTROU.';const desc=victory?'A porta final se abriu. Mas você tem certeza de que saiu do mesmo hotel?':'Você sobreviveu até a porta '+String(G.room).padStart(3,'0')+'. Cada morte ensina uma nova regra.';$('menuPanel').innerHTML=`<div class="eyebrow">${victory?'FIM DA PRIMEIRA NOITE':'FIM DA CORRIDA'}</div><h1 class="endTitle">${title}</h1><p class="endBody">${desc}</p><div class="bigStat">${String(G.room).padStart(3,'0')} <small>PORTAS ALCANÇADAS</small></div><p class="feature">RECORDE: PORTA ${String(G.records).padStart(3,'0')} &nbsp; · &nbsp; TEMPO: ${Math.floor(G.seconds/60)}m ${Math.floor(G.seconds%60)}s</p><div class="buttons"><button class="primary" id="againBtn">JOGAR NOVAMENTE</button><button class="outline" id="helpEnd">CONTROLES</button></div>`;$('mainOverlay').classList.remove('hidden');$('againBtn').onclick=startGame;$('helpEnd').onclick=howTo;audioCue(victory?'pickup':'death');}
+
+/* Registros de morte: dez mensagens e dez dicas correspondentes por criatura.
+   Só aparecem após o falecimento; nunca antecipam um encontro. */
+const DEATH_ARCHIVE={
+ "O VÉU": [
+  [
+   "A lâmpada piscou. Você chamou aquilo de mau contato.",
+   "Quando as luzes começarem a falhar em sequência, encontre um armário imediatamente."
+  ],
+  [
+   "O ronco veio primeiro. Você só acreditou quando o corredor tremeu.",
+   "Aprenda a reconhecer o som grave do Véu antes de ele passar pela sala."
+  ],
+  [
+   "Ele não foi embora. Só ficou quieto para escutar você abrir.",
+   "Se o rosto aparecer na fresta do armário, continue escondido até os ruídos se afastarem."
+  ],
+  [
+   "Você procurou um esconderijo quando já não havia tempo.",
+   "Observe a posição dos armários assim que entrar em uma sala."
+  ],
+  [
+   "A fresta mostrava olhos. Você decidiu olhar de perto.",
+   "Não saia do armário enquanto o Véu estiver examinando as portas."
+  ],
+  [
+   "A última piscada foi a última coisa que você viu.",
+   "Não espere a luz apagar completamente: falhas repetidas já são um sinal."
+  ],
+  [
+   "Seus passos eram rápidos. Os dele, impossíveis.",
+   "Tentar vencer o Véu na corrida é arriscado. Prefira esconder-se."
+  ],
+  [
+   "Você confundiu silêncio com segurança.",
+   "Depois da passagem, espere a respiração e os ruídos metálicos terminarem."
+  ],
+  [
+   "A madeira rangeu quando ele encostou a cabeça na porta.",
+   "Ficar dentro do armário é seguro durante a inspeção; abrir a porta é que provoca o ataque."
+  ],
+  [
+   "O corredor avisou. Você estava ocupado demais para notar.",
+   "Combine pistas: piscadas das lâmpadas e ronco grave indicam a presença do Véu."
+  ]
+ ],
+ "A ÍRIS": [
+  [
+   "O olho não piscou. Você também não desviou.",
+   "Ao avistar a Íris, vire a câmera para a parede ou para o chão."
+  ],
+  [
+   "A luz violeta refletia no vidro. Você admirou a cor.",
+   "Iluminação arroxeada e ruídos de vidro podem anunciar a Íris."
+  ],
+  [
+   "Você se tornou a única coisa que ela queria ver.",
+   "Não mantenha a câmera apontada para o centro da criatura."
+  ],
+  [
+   "Foi o olhar mais longo da sua vida.",
+   "Desviar o olhar cedo evita receber dano repetidamente."
+  ],
+  [
+   "A parede parecia sem graça. Ela teria salvado sua vida.",
+   "Quando a Íris surgir, olhe para qualquer lugar que não seja o olho."
+  ],
+  [
+   "Você não precisava correr. Precisava parar de olhar.",
+   "A Íris é superada desviando a câmera, não apenas acelerando."
+  ],
+  [
+   "Algo brilhou onde antes só existia poeira.",
+   "Preste atenção às mudanças súbitas de cor antes de procurar a porta."
+  ],
+  [
+   "Quanto mais você observava, mais ela conseguia te encontrar.",
+   "Um olhar rápido pode ser suficiente para reconhecer a ameaça; depois desvie."
+  ],
+  [
+   "Ela cresceu na sua visão até não haver mais nada.",
+   "Evite fixar a câmera na criatura enquanto procura uma saída."
+  ],
+  [
+   "O reflexo não era seu.",
+   "Escute os estalos delicados e observe reflexos estranhos nas superfícies."
+  ]
+ ],
+ "O ECO": [
+  [
+   "Seu último passo foi alto demais.",
+   "Depois das batidas metálicas, interrompa a movimentação durante os períodos de silêncio."
+  ],
+  [
+   "Ele não precisava de olhos. Bastou ouvir você.",
+   "Quando o Eco mandar parar, solte os controles de movimento."
+  ],
+  [
+   "Três batidas, uma pausa, e então o seu erro.",
+   "Aprenda o ritmo das batidas do Eco antes de atravessar a sala."
+  ],
+  [
+   "O chão guardou o som dos seus sapatos.",
+   "Na fase em que o Eco fica imóvel, não tente avançar mais um pouco."
+  ],
+  [
+   "Você achou que um passo não faria diferença.",
+   "Mesmo um movimento curto pode ser detectado durante a pausa do Eco."
+  ],
+  [
+   "A criatura estava parada. Era você quem não conseguia parar.",
+   "Observe o corpo pálido e aguarde o momento seguro para caminhar."
+  ],
+  [
+   "Os braços dele chegaram depois do som.",
+   "Não confunda a aparência imóvel do Eco com o fim do perigo."
+  ],
+  [
+   "Cada ruído era uma pergunta. Seu passo foi a resposta.",
+   "Escute as batidas metálicas e permaneça imóvel quando a sala silenciar."
+  ],
+  [
+   "A sala inteira ficou quieta, menos você.",
+   "Se suspeitar do Eco, prepare-se para parar antes de ouvir o último aviso."
+  ],
+  [
+   "Ele só precisou de um segundo de movimento.",
+   "Avance apenas nos intervalos seguros entre os ciclos da criatura."
+  ]
+ ],
+ "O RASTRO": [
+  [
+   "Você ouviu passos extras e pensou que fossem seus.",
+   "Se a corrida continuar mesmo depois de você parar, prepare-se para fugir."
+  ],
+  [
+   "A porta estava lá. Seus pés não chegaram.",
+   "Quando o Rastro começar a perseguir, avance para a próxima porta."
+  ],
+  [
+   "Você gastou todo o fôlego antes de precisar dele.",
+   "Poupe resistência durante a exploração; ela será útil numa perseguição."
+  ],
+  [
+   "O vermelho no corredor não vinha das lâmpadas.",
+   "Luzes avermelhadas e passos acelerados podem anunciar o Rastro."
+  ],
+  [
+   "Você olhou para trás. Ele já estava perto demais.",
+   "Durante a perseguição, concentre-se no trajeto até a saída."
+  ],
+  [
+   "O som de corrida cresceu quando você hesitou.",
+   "Ao reconhecer o Rastro, não pare para revistar gavetas."
+  ],
+  [
+   "O corredor não tinha fim. Sua resistência tinha.",
+   "Use a corrida nos momentos decisivos e encontre o caminho mais direto."
+  ],
+  [
+   "Uma curva errada foi suficiente.",
+   "Memorize a posição das portas e das passagens antes de avançar pelo cômodo."
+  ],
+  [
+   "Cada passo dele apagava um segundo da sua vantagem.",
+   "Corra ao perceber os passos hostis e tente não ficar preso procurando o rumo."
+  ],
+  [
+   "Você estava quase na porta.",
+   "Mantenha a câmera orientada para a saída quando a perseguição começar."
+  ]
+ ],
+ "A VELADORA": [
+  [
+   "O escuro sussurrou seu nome. Você não respondeu com luz.",
+   "Use a lanterna quando perceber sussurros ou uma presença azulada."
+  ],
+  [
+   "Ela estava perto. Sua bateria estava vazia.",
+   "Revise gavetas para conseguir baterias antes das salas escuras."
+  ],
+  [
+   "Você ouviu uma respiração que não acompanhava seus passos.",
+   "Respiração estranha e sussurros baixos podem sinalizar a Veladora."
+  ],
+  [
+   "O brilho azul parecia bonito à distância.",
+   "Uma mudança para tons azulados pode indicar que a Veladora está se aproximando."
+  ],
+  [
+   "Você guardou sua lanterna para depois. Não houve depois.",
+   "Acenda a lanterna cedo, antes de a criatura se aproximar demais."
+  ],
+  [
+   "Ela cresceu onde a luz não chegava.",
+   "A luz da lanterna faz a Veladora recuar; evite permanecer no escuro."
+  ],
+  [
+   "Você se acostumou ao breu. Ela também.",
+   "Mantenha alguma bateria disponível para reagir à criatura."
+  ],
+  [
+   "O sussurro passou a ser uma respiração sobre seu ombro.",
+   "Quando o som se intensificar, verifique imediatamente a lanterna."
+  ],
+  [
+   "No escuro, você não estava sozinho.",
+   "Use os sinais sonoros para detectar a Veladora antes de vê-la."
+  ],
+  [
+   "A última faísca da lanterna se apagou.",
+   "Controle o consumo da bateria e recolha recargas sempre que encontrar."
+  ]
+ ],
+ "A DUPLICATA": [
+  [
+   "A madeira tinha o número errado. Você ignorou a placa.",
+   "Compare a numeração de cada porta com o próximo número esperado."
+  ],
+  [
+   "Duas portas. Só uma pertencia ao hotel.",
+   "Quando houver duas opções, confira os números antes de interagir."
+  ],
+  [
+   "A fechadura respirou. Você colocou a mão na maçaneta.",
+   "Use V perto de uma porta para ouvir sinais de uma Duplicata."
+  ],
+  [
+   "A porta não estava trancada. Estava com fome.",
+   "Sopros roucos e arranhões atrás da madeira são sinais para recuar."
+  ],
+  [
+   "O hotel contou até três. Você escolheu quatro.",
+   "A próxima porta correta segue a sequência de numeração."
+  ],
+  [
+   "Você acreditou em um número escrito às pressas.",
+   "Observe as placas e compare-as antes de abrir uma passagem suspeita."
+  ],
+  [
+   "O primeiro erro custou 50. O segundo custou tudo.",
+   "Uma porta falsa causa 50 de dano: cure-se e evite repetir a escolha."
+  ],
+  [
+   "A cópia era boa. Os números, nem tanto.",
+   "Portas falsas podem parecer normais; o número errado é uma pista essencial."
+  ],
+  [
+   "Você encostou o ouvido tarde demais.",
+   "Ao desconfiar de uma porta, escute-a com V antes de abri-la."
+  ],
+  [
+   "Não era a saída. Era uma boca esperando sua mão.",
+   "Use o número e o áudio da fechadura juntos para distinguir a Duplicata."
+  ]
+ ]
+};
+const LAST_DEATH_ENTRY=Object.create(null);
+function pickDeathRecord(reason){
+ const known=Object.prototype.hasOwnProperty.call(DEATH_ARCHIVE,reason);
+ const killer=known?reason:'O HOTEL';
+ const entries=known?DEATH_ARCHIVE[killer]:[['O hotel guardou a última palavra.','Preste atenção aos ruídos, às luzes e às portas antes de continuar.']];
+ let idx=Math.floor(Math.random()*entries.length);
+ if(entries.length>1&&LAST_DEATH_ENTRY[killer]===idx)idx=(idx+1+Math.floor(Math.random()*(entries.length-1)))%entries.length;
+ LAST_DEATH_ENTRY[killer]=idx;
+ return {killer,quote:entries[idx][0],tip:entries[idx][1],number:idx+1,total:entries.length};
+}
+
+function showEnd(victory=false,reason=null){
+ G.mode=victory?'victory':'dead';exitLock();
+ $('qte').classList.remove('show','released');$('hud').classList.remove('show');
+ $('mobile').classList.remove('on');$('hiding').classList.remove('show');
+ $('trainingCard').classList.remove('on');showSignal();
+ $('mainOverlay').classList.toggle('deathScreen',!victory);
+ const title=victory?'VOCÊ SAIU.':'O HOTEL TE ENCONTROU.';
+ const desc=victory?'A porta final se abriu. Mas você tem certeza de que saiu do mesmo hotel?':'Você sobreviveu até a porta '+String(G.room).padStart(3,'0')+'. Cada morte ensina uma nova regra.';
+ const d=victory?null:pickDeathRecord(reason);
+ const dossier=d?`<section class="deathDossier" aria-label="Registro da morte">
+  <div class="deathDossierTop"><span>CAUSA DA MORTE</span><span>REGISTRO ${String(d.number).padStart(2,'0')} / ${String(d.total).padStart(2,'0')}</span></div>
+  <h2 class="deathEntity">${d.killer}</h2>
+  <p class="deathQuote">“${d.quote}”</p>
+  <div class="deathAdvice"><span>DICA PARA A PRÓXIMA TENTATIVA</span><p>${d.tip}</p></div>
+  </section>`:'';
+ $('menuPanel').innerHTML=`<div class="eyebrow">${victory?'FIM DA PRIMEIRA NOITE':'RELATÓRIO DE MORTE'}</div><h1 class="endTitle">${title}</h1><p class="endBody">${desc}</p>${dossier}<div class="bigStat">${String(G.room).padStart(3,'0')} <small>PORTAS ALCANÇADAS</small></div><p class="feature">RECORDE: PORTA ${String(G.records).padStart(3,'0')} &nbsp; · &nbsp; TEMPO: ${Math.floor(G.seconds/60)}m ${Math.floor(G.seconds%60)}s</p><div class="buttons"><button class="primary" id="againBtn">JOGAR NOVAMENTE</button><button class="outline" id="helpEnd">CONTROLES</button></div>`;
+ $('mainOverlay').classList.remove('hidden');
+ $('againBtn').onclick=startGame;$('helpEnd').onclick=howTo;
+ audioCue(victory?'pickup':'death');
+}
 function howTo(){const saved=G.mode==='menu'?'menu':G.mode;$('menuPanel').innerHTML=`<div class="eyebrow">MANUAL DE SOBREVIVÊNCIA</div><h1 class="endTitle">REGRAS DO HOTEL</h1><p class="feature"><b>WASD</b> andar · <b>MOUSE</b> olhar (clique no jogo para capturar) · <b>← →</b> virar sem mouse · <b>E</b> interagir com portas, armários e gavetas · <b>SHIFT</b> correr · <b>C</b> agachar · <b>V</b> escutar a porta · <b>F</b> lanterna · <b>Q</b> curativo · <b>ESC</b> pausar.<br><br><b>O VÉU</b>: esconda-se quando as luzes falharem.<br><b>A ÍRIS</b>: desvie o olhar dos olhos.<br><b>O ECO</b>: observe a figura pálida e fique parado quando ouvir a ordem.<br><b>O RASTRO</b>: fuja para a porta antes de ser alcançado.<br><b>A VELADORA</b>: use a lanterna no escuro.<br><b>A DUPLICATA</b>: cuidado com portas falsas.</p><p class="desc">Áudios gravados CC0 são reproduzidos com internet; sem conexão, efeitos sonoros procedurais permanecem ativos.<br><br>No celular, use o joystick esquerdo, arraste a parte livre da tela para olhar e toque em CORRER para ativar ou desativar a corrida. Há botões próprios para AGACHAR e OUVIR.</p><div class="buttons"><button class="primary" id="backHelp">${saved==='menu'?'COMEÇAR':'VOLTAR AO JOGO'}</button></div>`;$('mainOverlay').classList.remove('hidden');$('backHelp').onclick=()=>{if(saved==='menu'){startGame();}else if(saved==='playing'||saved==='paused'){G.mode='playing';$('mainOverlay').classList.add('hidden');tryLock();}else startGame();};}
 function pause(){if(G.mode==='playing'){G.mode='paused';exitLock();$('menuPanel').innerHTML=`<div class="eyebrow">O HOTEL ESPERA</div><h1 class="endTitle">PAUSADO</h1><p class="endBody">As criaturas não se movem enquanto o jogo está pausado.</p><div class="buttons"><button class="primary" id="resumeBtn">CONTINUAR</button><button class="outline" id="helpPause">COMO JOGAR</button></div>`;$('mainOverlay').classList.remove('hidden');$('resumeBtn').onclick=pause;$('helpPause').onclick=howTo;if(G.training){let b=document.createElement('button');b.className='outline';b.textContent='PULAR TREINAMENTO';b.onclick=trainingFinish;$('menuPanel').querySelector('.buttons').append(b);}}else if(G.mode==='paused'){G.mode='playing';$('mainOverlay').classList.add('hidden');tryLock();}}
 // SOUND LIBRARY: recordings from OpenGameArt (CC0). Stored as internet sources rather than
@@ -770,7 +1084,7 @@ function startJumpscare(reason,fatal=false,next='resume'){
 function tickJumpscare(dt){const j=G.jump;if(!j)return;j.t+=Math.min(dt,.05);if(j.t<j.duration)return;
  jumpCanvas.style.display='none';G.jump=null;
  if(j.next==='qte'){startQTE(j.reason);return;}
- if(j.next==='death'){showEnd(false);return;}
+ if(j.next==='death'){showEnd(false,j.reason);return;}
  G.mode='playing';$('hud').classList.add('show');$('mobile').classList.toggle('on',coarse);
  $('trainingCard').classList.toggle('on',G.training);G.invuln=Math.max(G.invuln,1.25);
  if(j.type==='fakeHit'){say('PORTA FALSA · −50 DE VIDA','A PRÓXIMA PORTA TEM OUTRO NÚMERO',2.9,true);subtitle('A madeira se mexeu... Aquilo não era uma saída.',2.3);}
