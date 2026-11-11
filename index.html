@@ -3,6 +3,7 @@
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover"><meta name="theme-color" content="#060a0d">
 <title>Hotel Grand Atrium — Capítulo I: A Porta 050</title>
+<meta name="game-version" content="1.1.0">
 <meta name="description" content="Hotel Grand Atrium: jogo de terror retrô em primeira pessoa. Explore 50 portas, descubra criaturas, enfrente sustos e sobreviva ao primeiro capítulo.">
 <style>
 :root{--paper:#e8e4d6;--faint:#9ca7a0;--gold:#d9b57b;--red:#ef5659;--mint:#b7ead4;--line:#d6d7bd30}*{box-sizing:border-box}html,body{width:100%;height:100%;margin:0;overflow:hidden;background:#050808;color:var(--paper);font-family:Inter,"Segoe UI",Arial,sans-serif;user-select:none;-webkit-user-select:none;touch-action:none}button{font:inherit;color:inherit;cursor:pointer}#view{position:fixed;inset:0;width:100%;height:100%;object-fit:cover;display:block;touch-action:none}#grain,#vignette,#hurtFx,#darkFx{pointer-events:none;position:fixed;inset:0}#grain{z-index:4;opacity:.10;mix-blend-mode:screen;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)' opacity='.75'/%3E%3C/svg%3E");animation:grain .18s steps(2) infinite alternate}@keyframes grain{from{transform:translate(0,0)}to{transform:translate(1%,-1%)}}#vignette{z-index:3;background:radial-gradient(ellipse at 50% 49%,transparent 24%,#0005 73%,#000e 100%)}#hurtFx{z-index:5;opacity:0;transition:opacity .22s;background:radial-gradient(ellipse at center,transparent 22%,#81050d77 61%,#dd0a18b0 100%)}#darkFx{z-index:3;opacity:0;transition:opacity .6s;background:radial-gradient(ellipse at 50% 51%,transparent 8%,#030508a8 60%,#010202ee 100%)}
@@ -45,6 +46,23 @@
  #mobile .lookHint{display:none}
  .bottom{bottom:calc(112px + env(safe-area-inset-bottom))}
 }
+/* Controles móveis, sem sobreposição: 2 colunas × 3 fileiras. */
+@media(pointer:coarse){
+ #mobile .touchBtns{right:calc(11px + env(safe-area-inset-right));bottom:calc(13px + env(safe-area-inset-bottom));grid-template-columns:repeat(2,60px);grid-auto-rows:56px;gap:8px}
+ #mobile .touchBtns .touchBtn,#mobile .touchBtns #lightMobile{position:static;inset:auto;grid-column:auto;width:60px;height:56px;min-height:56px;display:grid;align-content:center;justify-items:center;border:1px solid #e5d7b58b;background:#141c1ad9;border-radius:15px;pointer-events:auto;touch-action:none;font-size:20px;font-weight:900;line-height:1.08;box-sizing:border-box}
+ #mobile .touchBtns #lightMobile{border-color:#99f2d4a0;background:#133127dc;color:#c5ffe9}
+ #mobile .touchBtns .touchBtn small,#mobile .touchBtns #lightMobile small{display:block;margin-top:4px;font:800 8px/1 Arial,sans-serif;letter-spacing:.015em;color:#eee0c4}
+ #mobile .touchBtns #lightMobile:active,#mobile .touchBtns #lightMobile.lit{box-shadow:inset 0 0 13px #a6ffe369,0 0 12px #b4ffe84b}
+ #mobile .lookHint{display:none}
+ .bottom .hint{display:none}
+}
+@media(pointer:coarse) and (max-height:580px){
+ #mobile .touchBtns{grid-template-columns:repeat(2,53px);grid-auto-rows:44px;gap:6px}
+ #mobile .touchBtns .touchBtn,#mobile .touchBtns #lightMobile{width:53px;height:44px;min-height:44px;font-size:17px;border-radius:12px}
+ #mobile .touchBtns .touchBtn small,#mobile .touchBtns #lightMobile small{font-size:7px;margin-top:2px}
+ #mobile .joyBg{width:108px;height:108px;left:calc(9px + env(safe-area-inset-left));bottom:calc(12px + env(safe-area-inset-bottom))}
+}
+.echoWarning{font-size:clamp(14px,2.5vw,22px);top:17%;opacity:.85;letter-spacing:.14em}
 /* Sequências cinematográficas de susto, independentes do mundo 3D. */
 #jumpCanvas{display:none;position:fixed;z-index:10;inset:0;width:100%;height:100%;pointer-events:none;touch-action:none;image-rendering:auto}
 
@@ -63,7 +81,7 @@
 <canvas id="view" aria-label="Jogo de terror em primeira pessoa"></canvas><canvas id="jumpCanvas" aria-hidden="true"></canvas><div id="grain"></div><div id="ambientDirt"></div><div id="vignette"></div><div id="hurtFx"></div><div id="darkFx"></div><div id="hiding"></div>
 <div id="hud"><div class="top"><div><div class="roomNum"><small>HOTEL GRAND ATRIUM / PORTA</small><span id="roomNo">001</span> <span id="totalLabel" style="font:500 12px Inter,Arial;color:#e1c79c">/ 050</span></div><div class="meter"><div id="hpBar" class="health"></div></div><div class="meter stamina"><div id="stBar" class="staminaFill"></div></div><div id="stanceText" class="stanceText">● EM PÉ</div></div><div class="topRight"><div class="bag"><div class="bagHead">INVENTÁRIO</div><div class="bagRow"><span>◈ Bateria</span><b id="batText">100%</b></div><div class="bagRow"><span>⌁ Chave</span><b id="keyText">—</b></div><div class="bagRow"><span>✚ Curativos</span><b id="healText">1</b></div></div><button class="menuBtn" id="pauseBtn" aria-label="Pausar">Ⅱ</button></div></div><div class="chapter" id="chapter">SIGA PARA A PRÓXIMA PORTA</div><div id="objectiveTrack"><span id="objectiveArrow">◆</span><span id="objectiveLabel">EXPLORE O HOTEL</span></div><div id="crosshair"></div><div id="signal" aria-live="polite"></div><div id="interaction"><span class="keycap" id="actionKey">E</span><div class="contextLabel"><span id="actionText">ABRIR PORTA</span><small id="actionSub">INTERAGIR</small></div></div><div class="notification" id="notice"><strong id="noticeTitle"></strong><span id="noticeSub"></span></div><div class="subtitle" id="subtitle"></div><div class="echoWarning" id="echoWarning">NÃO SE MEXA</div><div class="bottom"><div class="item" id="lightItem"><b>☼</b><span>F · LUZ</span></div><div class="item" id="healItem"><b>✚</b><span>Q · CURA</span></div><div class="hint"><kbd>WASD</kbd> MOVER &nbsp; <kbd>MOUSE</kbd> OLHAR &nbsp; <kbd>E</kbd> INTERAGIR<br><kbd>SHIFT</kbd> CORRER &nbsp; <kbd>C</kbd> AGACHAR &nbsp; <kbd>V</kbd> OUVIR PORTA<br><kbd>F</kbd> LANTERNA &nbsp; <kbd>ESC</kbd> PAUSAR</div></div></div>
 <aside id="trainingCard"><div class="trEyebrow" id="trEyebrow">TREINAMENTO · 1/7</div><h3 id="trTitle">Aprenda a sobreviver</h3><p id="trDesc"></p><div class="trGoal" id="trGoal"></div><button id="tutRepeat">R · REPETIR ETAPA</button><button id="tutSkip">T · PULAR TUTORIAL</button></aside>
-<div id="mobile"><div class="joyBg" id="joy"><div class="joyDot" id="joyDot"></div></div><div class="lookHint">ARRASTE PARA OLHAR</div><button id="lightMobile" aria-label="Ligar lanterna">☼</button><div class="touchBtns"><button class="touchBtn" id="touchE">E<small>INTERAGIR</small></button><button class="touchBtn" id="touchHeal">✚<small>CURAR</small></button><button class="touchBtn" id="touchCrouch">⌄<small>AGACHAR</small></button><button class="touchBtn" id="touchListen">♫<small>OUVIR</small></button><button class="touchBtn wide" id="touchRun">⇧ CORRER · TOQUE</button></div></div>
+<div id="mobile"><div class="joyBg" id="joy"><div class="joyDot" id="joyDot"></div></div><div class="lookHint">ARRASTE PARA OLHAR</div><div class="touchBtns"><button class="touchBtn" id="touchE" aria-label="Interagir">E<small>ABRIR</small></button><button class="touchBtn" id="lightMobile" aria-label="Ligar e desligar lanterna">☼<small>LUZ</small></button><button class="touchBtn" id="touchRun" aria-label="Alternar corrida">⇧<small>CORRER</small></button><button class="touchBtn" id="touchCrouch" aria-label="Agachar">⌄<small>AGACHAR</small></button><button class="touchBtn" id="touchHeal" aria-label="Curativo">✚<small>CURAR</small></button><button class="touchBtn" id="touchListen" aria-label="Escutar porta">♫<small>OUVIR</small></button></div></div>
 <div id="qte"><div class="qteBox"><div class="qteIndex" id="qteIndex">SEGUNDA CHANCE · 1 / 3</div><h2 class="qteTitle" id="qteTitle">RESPIRE.</h2><p class="qteDesc" id="qteDesc">Tente escapar.</p><div class="qteBar" id="qteBar"><div class="qteZone"></div><div id="qteCursor" class="qteCursor"></div></div><div class="qteCount" id="qteCount"></div><div class="qteSequence" id="qteSequence"></div><div class="qteTime"><div id="qteTimeBar"></div></div><div class="qteButtons" id="qteButtons"></div><div class="qteFoot">UM ERRO PODE SER O ÚLTIMO.</div></div></div>
 <div id="finaleUI"><button id="skipFinale">PULAR CENA »</button><div id="finaleControls"><button id="finaleAgain">JOGAR DE NOVO</button><button id="finaleMenu">VOLTAR AO MENU</button></div></div>
 <div id="mainOverlay"><div class="panel" id="menuPanel"><div class="eyebrow">UM JOGO DE SOBREVIVÊNCIA</div><h1 class="title">HOTEL<br><em>GRAND<br>ATRIUM</em></h1><p class="desc">Cinquenta portas. Um hotel que não deveria existir. Cada quarto tem uma regra diferente para sobreviver.</p><p class="feature"><b>EXPLORAR</b> salas e procurar chaves &nbsp; · &nbsp; <b>ESCONDER-SE</b> de criaturas &nbsp; · &nbsp; <b>CORRER</b> quando as luzes falharem &nbsp; · &nbsp; <b>SOBREVIVER</b> ao desconhecido</p><div class="buttons"><button class="primary" id="playBtn">ENTRAR NO HOTEL</button><button class="outline" id="controlsBtn">COMO JOGAR</button></div><div class="foot">ELEVADOR · RECEPÇÃO · 50 PORTAS · 6 AMEAÇAS · PC E CELULAR<br><span style="color:#bdb0a0">🔊 <span id="audioSourceStatus">Gravações CC0 online + sons offline</span></span></div></div>
@@ -74,7 +92,7 @@
 const $=id=>document.getElementById(id),canvas=$('view'),ctx=canvas.getContext('2d',{alpha:false}),jumpCanvas=$('jumpCanvas'),jctx=jumpCanvas.getContext('2d',{alpha:false});
 const TAU=Math.PI*2,FOV=Math.PI/2.85,PLANE=Math.tan(FOV/2),GW=15,GH=15,TOTAL=50;
 const clamp=(v,a,b)=>Math.max(a,Math.min(b,v)),lerp=(a,b,t)=>a+(b-a)*t,rand=(a=0,b=1)=>a+Math.random()*(b-a),rnd=n=>Math.floor(Math.random()*n),choose=a=>a[rnd(a.length)],dist=(a,b)=>Math.hypot(a.x-b.x,a.y-b.y),normAngle=v=>Math.atan2(Math.sin(v),Math.cos(v));
-let W=innerWidth,H=innerHeight,dpr=1,last=0,frame=0,rays=[],rayWidth=3,baseTextures={},spriteCache=new Map(),audio=null,master=null,noiseBuffer=null,soundOn=true,ambientOsc=[],ambientGain=null,signalCooldown=0,easterCooldown=0;
+let W=innerWidth,H=innerHeight,dpr=1,last=0,frame=0,rays=[],rayWidth=3,baseTextures={},spriteCache=new Map(),audio=null,master=null,scareBus=null,scareLimiter=null,noiseBuffer=null,soundOn=true,ambientOsc=[],ambientGain=null,signalCooldown=0,easterCooldown=0;
 let keys=Object.create(null),joy={x:0,y:0,active:false,id:-1},touchLook=null,touchRunning=false,noticeTTL=0,subtitleTTL=0,flash=0,shake=0,thump=0,advanceFade=0;
 const coarse=matchMedia('(pointer:coarse)').matches;
 let G={training:false,trainingPassed:false,trainingTried:false,tutorialLightTime:0,easterStare:0,easterSeen:false,mode:'menu',room:0,elevatorTime:0,elevatorChimed:false,elevatorOpening:false,crouching:false,velF:0,velS:0,headBob:0,listenCd:0,bellRings:0,lastInput:0,health:100,stamina:100,battery:100,bandages:1,key:false,torch:true,hidden:false,hideTime:0,seconds:0,roomTime:0,eyePain:0,invuln:0,lastBreath:true,runBest:0,position:{x:7.5,y:12.35,a:-Math.PI/2},map:[],objects:[],encounter:null,locked:false,theme:0,scene:'hall',sprinting:false,darkness:0,injuryPulse:0,qte:null,jump:null,records:0};
@@ -186,21 +204,21 @@ function makeMap(style){let m=Array.from({length:GH},(_,y)=>Array.from({length:G
  }return m;}
 
 const LESSONS=[
- {name:'A CHAVE É O COMEÇO',desc:'WASD para andar; mouse ou setas para olhar. Revise as gavetas com E. Uma delas guarda a chave. Pressione F para testar a lanterna, Q para usar curativos, e C para se AGACHAR sob os fios vermelhos sem dispará-los.',goal:'Encontre a chave em uma gaveta e abra a porta 002.'},
- {name:'A DUPLICATA',desc:'Observe SEMPRE o número da próxima porta. Aqui há duas: 003 é a verdadeira; 013 é uma cópia. Abrir a errada causa 50 de dano e um jumpscare. Um ataque fatal mostra um susto diferente.',goal:'Escolha a porta 003. Você pode investigar a falsa, mas vai se machucar.'},
- {name:'O VÉU',desc:'SINAL: lâmpadas e abajures piscam agressivamente, com chiado e ronco grave crescente. Esconda-se com E em um armário ANTES da passagem. Às vezes o Véu para, encosta o rosto nas frestas e te observa por alguns segundos. NÃO SAIA até ele se afastar e o som desaparecer.',goal:'Sobreviva à passagem escondido; depois procure a porta 004.'},
- {name:'A ÍRIS',desc:'SINAL: brilho arroxeado, rangido de vidro e olho que se abre no cômodo. Quando ele surgir, GIRE A CÂMERA e não olhe diretamente. Encarar causa ferimentos.',goal:'Desvie o olhar até a Íris se fechar. Avance para a porta 005.'},
- {name:'O ECO',desc:'SINAL: três batidas metálicas espaçadas. Quando a ordem NÃO SE MEXA aparecer, solte os controles e pare de girar a câmera. Dois ciclos de silêncio.',goal:'Fique imóvel nas duas ordens e alcance a porta 006.'},
- {name:'O RASTRO',desc:'SINAL: passos cada vez mais rápidos, iluminação vermelha e um grito. Ele corre atrás de você. Segure SHIFT para correr e atravesse a próxima porta; armários não são sua melhor opção.',goal:'Corra até a porta 007 antes de o monstro te alcançar.'},
- {name:'A VELADORA',desc:'SINAL: iluminação azulada, sussurros e respiração próxima. Ela só avança quando você fica no escuro. F liga a lanterna; as baterias recarregam a energia.',goal:'Mantenha a lanterna acesa por 3 segundos durante a ameaça e saia.'}
+ {name:'ESCUTE ANTES DE AGIR',desc:'O hotel não mostra alertas durante a partida real. Caminhe devagar, ouça os passos e rangidos e compare as luzes acesas e apagadas. Revise as gavetas com E, use F para iluminar e C para se abaixar sob fios. Pratique encontrar uma chave.',goal:'Reviste gavetas, encontre a chave e alcance a porta 002.'},
+ {name:'NÚMEROS QUE MENTEM',desc:'Repare na numeração das portas antes de girar a maçaneta. A porta correta segue a sequência; a outra tem um número diferente. Com V, encoste o ouvido: madeira arranhada, sopros e unhas revelam perigo. Abrir uma cópia custa 50 de vida.',goal:'Compare os números e os sons; escolha a porta 003.'},
+ {name:'O VÉU · SINAIS ELÉTRICOS',desc:'Não espere um letreiro. Observe pequenas falhas nos abajures, piscadas mais frequentes e um ronco grave que cresce. Quando luzes e som mudarem juntos, entre no armário. Se a respiração parar diante da fresta, NÃO abra até ouvir a partida.',goal:'Ouça o ronco, note as lâmpadas e sobreviva escondido.'},
+ {name:'A ÍRIS · VIDRO E LUZ',desc:'Percebeu reflexos roxos onde não havia nada? O rangido delicado de vidro precede a Íris. Ao notar o olho no cômodo, gire a câmera para uma parede. O perigo é olhar demais — não é obrigatório correr.',goal:'Reconheça a iluminação arroxeada e pratique desviar o olhar.'},
+ {name:'O ECO · TRÊS BATIDAS',desc:'O Eco não avisa com letreiros na partida real. Preste atenção em três batidas metálicas, nos intervalos de silêncio e no corpo pálido aparecendo no quarto. Quando o som cessar e a figura travar, pare seus passos e a câmera.',goal:'Observe e sobreviva a dois ciclos de silêncio sem se mover.'},
+ {name:'O RASTRO · PASSOS ERRADOS',desc:'Compare os seus próprios passos com outro ritmo que vem de trás: ele acelera mesmo quando você para. O vermelho discreto na iluminação e o som de corrida são a pista para fugir. Corra com Shift e procure a próxima porta.',goal:'Diferencie os passos do inimigo e atravesse a próxima porta.'},
+ {name:'A VELADORA · RESPIRAÇÃO NO ESCURO',desc:'Sussurros baixos e luz azulada indicam que algo está perto. Você também escutará uma respiração que NÃO acompanha seus passos. Observe a bateria e ligue a lanterna com F: a presença recua quando iluminada.',goal:'Identifique os sussurros e mantenha a luz acesa por 3 segundos.'}
 ];
 const trainingType=['none','none','impostor','rush','eye','echo','chaser','whisper'];
 function showTrainingCard(){if(!G.training)return;let x=LESSONS[Math.max(0,G.room-1)];$('trainingCard').classList.add('on');$('trEyebrow').textContent='TREINAMENTO · '+G.room+' / 7';$('trTitle').textContent=x.name;$('trDesc').textContent=x.desc;updateTrainingGoal();}
 function updateTrainingGoal(){if(!G.training)return;let x=LESSONS[Math.max(0,G.room-1)];$('trGoal').textContent=(G.trainingPassed?'✓ OBJETIVO CONCLUÍDO · ':'OBJETIVO · ')+x.goal;}
 function markTrainingPass(){if(!G.training||G.trainingPassed)return;G.trainingPassed=true;updateTrainingGoal();audioCue('pickup');say('TREINAMENTO CONCLUÍDO','A PRÓXIMA PORTA ESTÁ LIBERADA',2.6);}
-function trainingFinish(){G.mode='trainingEnd';G.training=false;G.lastBreath=true;exitLock();$('trainingCard').classList.remove('on');$('signal').classList.remove('on');$('hud').classList.remove('show');$('mobile').classList.remove('on');$('hiding').classList.remove('show');$('menuPanel').innerHTML=`<div class="eyebrow">TREINAMENTO CONCLUÍDO</div><h1 class="endTitle">VOCÊ CONHECE OS SINAIS.</h1><p class="endBody">Você identificou os sinais das seis ameaças, aprendeu a reconhecer portas falsas, revistou gavetas e praticou cada resposta. No hotel verdadeiro, ninguém vai avisar duas vezes.</p><div class="buttons"><button class="primary" id="realPlay">COMEÇAR A PARTIDA REAL</button><button class="outline" id="againTrain">REPETIR TUTORIAL</button></div>`;$('mainOverlay').classList.remove('hidden');$('realPlay').onclick=()=>beginGame(false);$('againTrain').onclick=()=>beginGame(true);audioCue('pickup');}
+function trainingFinish(){G.mode='trainingEnd';G.training=false;G.lastBreath=true;exitLock();$('trainingCard').classList.remove('on');$('signal').classList.remove('on');$('hud').classList.remove('show');$('mobile').classList.remove('on');$('hiding').classList.remove('show');$('menuPanel').innerHTML=`<div class="eyebrow">TREINAMENTO CONCLUÍDO</div><h1 class="endTitle">VOCÊ CONHECE OS SINAIS.</h1><p class="endBody">Você praticou como distinguir passos, piscadas, luzes estranhas e ruídos antes de reagir. Na partida real, os monstros NÃO têm avisos escritos: confie no que você vê e escuta.</p><div class="buttons"><button class="primary" id="realPlay">COMEÇAR A PARTIDA REAL</button><button class="outline" id="againTrain">REPETIR TUTORIAL</button></div>`;$('mainOverlay').classList.remove('hidden');$('realPlay').onclick=()=>beginGame(false);$('againTrain').onclick=()=>beginGame(true);audioCue('pickup');}
 function showSignal(text='',mode=''){const el=$('signal');el.textContent=text;el.className=(text?'on ':'')+mode;}
-function signalForEncounter(){const e=G.encounter;if(!e||e.type==='none'||e.type==='impostor'||e.phase==='end'){showSignal();return;}
+function signalForEncounter(){if(!G.training){showSignal();return;}const e=G.encounter;if(!e||e.type==='none'||e.type==='impostor'||e.phase==='end'){showSignal();return;}
  let text='',mode='';
  if(e.type==='rush'&&['warn','passing'].includes(e.phase)){text=e.phase==='warn'?'⚡ VÉU · LUZES FALHANDO · ESCONDA-SE':'⛔ VÉU PASSANDO · NÃO SAIA';mode='danger';}
  else if(e.type==='rush'&&e.phase==='staring'){text='◉ O VÉU ESTÁ OLHANDO PELA FRESTA · NÃO SAIA';mode='danger';}
@@ -425,15 +443,17 @@ function createRoom(num){let type=G.training?trainingType[num]||'none':encounter
  let encounter={type,phase:'start',time:G.training?(type==='rush'?8:type==='chaser'?6:type==='echo'?6:type==='eye'?6:type==='whisper'?6:0):type==='rush'?2.5:type==='chaser'?2.2:type==='echo'?2.6:type==='eye'?2.6:type==='whisper'?4:0,cooldown:0,charges:0,lookAway:0,darkTime:0,hit:false,echoMoves:0,chaseSpeed:G.training?1.22:1.85+num*.016,signalClock:0,lightTime:0};
  timed.length=0;$('echoWarning').style.display='none';G.trainingPassed=!G.training||num===2;G.trainingTried=false;G.tutorialLightTime=0;G.easterStare=0;G.easterSeen=false;G.room=num;G.roomTime=0;G.position={x:7.5,y:type==='chaser'?11.0:12.4,a:-Math.PI/2};G.map=map;G.objects=objects;G.encounter=encounter;G.locked=locked;G.puzzle=puzzle;G.key=false;G.hidden=false;G.hideTime=0;G.hideAngle=null;G.hiddenIn=null;G.scene=style;G.theme=type==='whisper'?2:type==='chaser'?1:num%5===0?3:0;G.darkness=type==='whisper'?.72:0;G.invuln=Math.max(G.invuln,1);G.eyePain=0;
  $('totalLabel').textContent=G.training?'/ 007':'/ 050';$('roomNo').textContent=String(num).padStart(3,'0');$('chapter').textContent=G.training?'TREINAMENTO · '+num+' / 7':locked?'PROCURE UMA CHAVE NESTA SALA':type==='chaser'?'NÃO PARE DE CORRER':num===TOTAL-1?'A PORTA 050 ESTÁ À FRENTE': 'SIGA PARA A PRÓXIMA PORTA';
- if(num===1){say('O hotel ainda está acordado.','ENCONTRE A PORTA 002',3.6);subtitle('As portas nunca levam para o mesmo lugar...',5);}else if(type==='rush'&&num===3){say('Uma coisa atravessa os corredores.','QUANDO AS LUZES PISCAREM, ESCONDA-SE.',4.2);}else if(type==='eye'&&num===5){say('Nem tudo gosta de ser observado.','DESVIE O OLHAR DOS OLHOS.',3.4);}else if(type==='echo'&&num===7){say('Alguma coisa está escutando.','NÃO SE MOVA QUANDO ELA MANDAR.',3.2);}else if(type==='chaser'&&num===10){say('Está atrás de você.','CORRA PARA A PRÓXIMA PORTA!',3.5);}else if(type==='whisper'&&num===6){say('A luz é sua única companhia.','F PARA LIGAR A LANTERNA',3.6);}else{say('PORTA '+String(num).padStart(3,'0'),locked?'ESTA SALA ESTÁ TRANCADA':choose(['O AR PARECE MAIS FRIO.','ESCUTE ANTES DE ENTRAR.','NEM TODA SAÍDA É REAL.','ALGUÉM PASSOU POR AQUI.']),2.6);}
+ if(G.training&&num===1){say('TREINAMENTO','OBSERVE LUZES, SONS E OBJETOS ANTES DE AGIR',3.6);}else if(!G.training){$('notice').classList.remove('on');noticeTTL=0;}
  if(G.training){showTrainingCard();G.invuln=0;}else{G.records=Math.max(G.records,num);try{localStorage.setItem('grand_atrium_best',G.records);}catch(_){}}signalForEncounter();updateObjective();
 }
+function threatHint(title,sub='',duration=2.6,danger=false){if(G.training)say(title,sub,duration,danger);}
+function trainingSubtitle(text,duration=2.5){if(G.training)subtitle(text,duration);}
 function say(title,sub='',duration=2.6,danger=false){$('noticeTitle').textContent=title;$('noticeSub').textContent=sub;noticeTTL=duration;$('notice').classList.toggle('danger',danger);$('notice').classList.add('on');}
 function subtitle(text,duration=2.5){$('subtitle').textContent=text;subtitleTTL=duration;$('subtitle').classList.add('on');}
 
 function startGame(){
  $('finaleUI').classList.remove('on');$('finaleControls').classList.remove('on');G.mode='menuPrompt';exitLock();$('trainingCard').classList.remove('on');$('hud').classList.remove('show');$('mobile').classList.remove('on');showSignal();
- $('menuPanel').innerHTML=`<div class="eyebrow">ANTES DE ENTRAR</div><h1 class="endTitle">VOCÊ QUER FAZER<br>O TUTORIAL?</h1><p class="endBody">É opcional. Após o elevador e a recepção, você irá para uma partida de treinamento com <b>sete salas</b>, sinais visuais e sonoros de cada criatura, armários, portas falsas, chaves e lanternas. Pode pular quando quiser.</p><div class="buttons"><button class="primary" id="yesTrain">SIM · APRENDER</button><button class="outline" id="noTrain">NÃO · JOGAR DIRETO</button></div>`;
+ $('menuPanel').innerHTML=`<div class="eyebrow">ANTES DE ENTRAR</div><h1 class="endTitle">VOCÊ QUER FAZER<br>O TUTORIAL?</h1><p class="endBody">É opcional. Após o elevador e a recepção, você irá para uma partida de treinamento com <b>sete salas</b>, pistas discretas de cada criatura, armários, portas falsas, chaves e lanternas. Pode pular quando quiser.</p><div class="buttons"><button class="primary" id="yesTrain">SIM · APRENDER</button><button class="outline" id="noTrain">NÃO · JOGAR DIRETO</button></div>`;
  $('mainOverlay').classList.remove('hidden');$('yesTrain').onclick=()=>beginGame(true);$('noTrain').onclick=()=>beginGame(false);
 }
 function beginGame(training=false){
@@ -602,7 +622,7 @@ function playRecorded(event,options={}){
    const obj=G.objects?.find(o=>o.active&&['rush','echo','chaser','whisper','eye'].includes(o.kind));
    if(obj&&G.position)proximity=clamp(1.2-dist(obj,G.position)/17,.36,1);
   }
-  el.volume=Math.min(.7,AUDIO_SOURCES[source].volume*amp*(options.gain??1)*proximity);
+  el.volume=event.startsWith('scare')?Math.min(1,Math.max(.72,AUDIO_SOURCES[source].volume*amp*(options.gain??1)*2.7)):Math.min(.7,AUDIO_SOURCES[source].volume*amp*(options.gain??1)*proximity);
   el.playbackRate=Math.max(.5,Math.min(2,rate*(options.pitch||1)));
   const promise=el.play();
   if(promise?.catch)promise.catch(()=>{record.failed=true;});
@@ -620,7 +640,7 @@ function updateRecordedBed(){
  if(active&&recordedBed.paused){const p=recordedBed.play();if(p?.catch)p.catch(()=>{});}
  if(!active&&!recordedBed.paused){recordedBed.pause();}
 }
-function audioInit(){if(audio)return;try{audio=new (window.AudioContext||window.webkitAudioContext)();master=audio.createGain();master.gain.value=soundOn?.22:0;master.connect(audio.destination);ambientGain=audio.createGain();ambientGain.gain.value=0;ambientGain.connect(master);for(let i=0;i<2;i++){let osc=audio.createOscillator();osc.type=i?'sine':'triangle';osc.frequency.value=i?67:46;let level=audio.createGain();level.gain.value=i?.42:.85;osc.connect(level);level.connect(ambientGain);osc.start();ambientOsc.push(osc);}noiseBuffer=audio.createBuffer(1,Math.floor(audio.sampleRate*.6),audio.sampleRate);const d=noiseBuffer.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=rand(-1,1)*.5;}catch(e){audio=null;}}
+function audioInit(){if(audio)return;try{audio=new (window.AudioContext||window.webkitAudioContext)();master=audio.createGain();master.gain.value=soundOn?.22:0;master.connect(audio.destination);scareBus=audio.createGain();scareBus.gain.value=soundOn?.86:0;scareLimiter=audio.createDynamicsCompressor();scareLimiter.threshold.value=-18;scareLimiter.knee.value=12;scareLimiter.ratio.value=7;scareLimiter.attack.value=.004;scareLimiter.release.value=.23;scareBus.connect(scareLimiter);scareLimiter.connect(audio.destination);ambientGain=audio.createGain();ambientGain.gain.value=0;ambientGain.connect(master);for(let i=0;i<2;i++){let osc=audio.createOscillator();osc.type=i?'sine':'triangle';osc.frequency.value=i?67:46;let level=audio.createGain();level.gain.value=i?.42:.85;osc.connect(level);level.connect(ambientGain);osc.start();ambientOsc.push(osc);}noiseBuffer=audio.createBuffer(1,Math.floor(audio.sampleRate*.6),audio.sampleRate);const d=noiseBuffer.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=rand(-1,1)*.5;}catch(e){audio=null;}}
 
 function runAtmosphere(dt){
  if(!audio||!ambientGain)return;
@@ -675,7 +695,7 @@ function footstepSound(mode='walk'){
   }
  }catch(_e){}
 }
-function soundToggle(){soundOn=!soundOn;if(master)master.gain.value=soundOn?.22:0;if(!soundOn){for(const r of Object.values(recordedAudio))try{r.el.pause();}catch(_){}}updateRecordedBed();}
+function soundToggle(){soundOn=!soundOn;if(master)master.gain.value=soundOn?.22:0;if(scareBus)scareBus.gain.value=soundOn?.86:0;if(!soundOn){for(const r of Object.values(recordedAudio))try{r.el.pause();}catch(_){}}updateRecordedBed();}
 function collide(x,y){
  // World geometry is solid. All decorative furniture and interactive props are intangible.
  // Keeping walls solid prevents escaping the room, but sofas/closets/desks never trap players.
@@ -721,7 +741,7 @@ function listenDoor(){
 function updateActionButtons(){
  $('touchRun').classList.toggle('isOn',touchRunning);
  $('touchCrouch').classList.toggle('isOn',G.crouching);
- $('touchRun').textContent=touchRunning?'⇧ CORRIDA ATIVA':'⇧ CORRER · TOQUE';
+ $('touchRun').innerHTML=touchRunning?'⇧<small>PARAR</small>':'⇧<small>CORRER</small>';
  $('stanceText').textContent=G.crouching?'⌄ AGACHADO · PASSOS LEVES':G.sprinting?'⇧ CORRENDO':'● EM PÉ';
 }
 // JUMPSCARES — all 6 entities have distinct hand-drawn animated close-ups.
@@ -766,11 +786,11 @@ function playJumpSound(kind,fatal){
  filter.type='lowpass';filter.frequency.setValueAtTime(kind==='eye'?2400:1300,now);
  filter.frequency.exponentialRampToValueAtTime(270,now+dur);
  gain.gain.setValueAtTime(.001,now);gain.gain.exponentialRampToValueAtTime(fatal?.34:.22,now+.036);gain.gain.exponentialRampToValueAtTime(.001,now+dur);
- voice.connect(filter);filter.connect(gain);gain.connect(master);voice.start(now);voice.stop(now+dur+.05);
+ voice.connect(filter);filter.connect(gain);gain.connect(scareBus||master);voice.start(now);voice.stop(now+dur+.05);
  if(noiseBuffer){const src=audio.createBufferSource(),nf=audio.createBiquadFilter(),ng=audio.createGain();src.buffer=noiseBuffer;src.loop=true;nf.type='bandpass';nf.frequency.value=kind==='whisper'?1500:kind==='eye'?2000:kind==='echo'?500:750;nf.Q.value=.65;
- ng.gain.setValueAtTime(.001,now);ng.gain.linearRampToValueAtTime(fatal?.32:.19,now+.028);ng.gain.exponentialRampToValueAtTime(.001,now+dur*.78);src.connect(nf);nf.connect(ng);ng.connect(master);src.start(now);src.stop(now+dur);}
+ ng.gain.setValueAtTime(.001,now);ng.gain.linearRampToValueAtTime(fatal?.32:.19,now+.028);ng.gain.exponentialRampToValueAtTime(.001,now+dur*.78);src.connect(nf);nf.connect(ng);ng.connect(scareBus||master);src.start(now);src.stop(now+dur);}
  // A double thump punctuates the end of the attack.
- for(let i=0;i<2;i++){const o=audio.createOscillator(),g=audio.createGain(),start=now+.11+i*.22;o.type='sine';o.frequency.setValueAtTime(75,start);o.frequency.exponentialRampToValueAtTime(28,start+.18);g.gain.setValueAtTime(.19,start);g.gain.exponentialRampToValueAtTime(.001,start+.18);o.connect(g);g.connect(master);o.start(start);o.stop(start+.19);}
+ for(let i=0;i<2;i++){const o=audio.createOscillator(),g=audio.createGain(),start=now+.11+i*.22;o.type='sine';o.frequency.setValueAtTime(75,start);o.frequency.exponentialRampToValueAtTime(28,start+.18);g.gain.setValueAtTime(.19,start);g.gain.exponentialRampToValueAtTime(.001,start+.18);o.connect(g);g.connect(scareBus||master);o.start(start);o.stop(start+.19);}
  }catch(_){}
 }
 function scareCircle(c,x,y,rx,ry,fill,stroke=null,lineWidth=2){c.beginPath();c.ellipse(x,y,rx,ry,0,0,TAU);c.fillStyle=fill;c.fill();if(stroke){c.strokeStyle=stroke;c.lineWidth=lineWidth;c.stroke();}}
@@ -900,7 +920,7 @@ function damage(d,reason){
  G.invuln=.85;G.injuryPulse=1;flash=Math.max(flash,.22);shake=Math.max(shake,9);
  // A door mimic always attacks visibly; the six creatures jump out on a lethal blow.
  if(fatal){
-  const next=G.lastBreath&&G.room>=5?'qte':'death';
+  const next=G.lastBreath?'qte':'death';
   startJumpscare(reason,true,next);
  }else if(reason==='A DUPLICATA'){
   startJumpscare(reason,false,'resume');
@@ -918,14 +938,14 @@ function finishRushEncounter(e,ob){
  if(ob)ob.active=false;
  if(G.training&&G.room===3){
   if(G.hidden){e.phase='end';e.time=0;markTrainingPass();}
-  else{e.phase='start';e.time=4.5;e.hit=false;e.peekDone=false;say('TENTE NOVAMENTE','ESCONDA-SE E CONTINUE LÁ ATÉ O VÉU PARTIR',2.8);}
- }else{e.phase='end';e.time=0;say('OS PASSOS SE AFASTARAM','O CORREDOR VOLTOU AO SILÊNCIO',2.3);}
+  else{e.phase='start';e.time=4.5;e.hit=false;e.peekDone=false;threatHint('TENTE NOVAMENTE','ESCONDA-SE E CONTINUE LÁ ATÉ O VÉU PARTIR',2.8);}
+ }else{e.phase='end';e.time=0;threatHint('OS PASSOS SE AFASTARAM','O CORREDOR VOLTOU AO SILÊNCIO',2.3);}
 }
 function tickEncounter(dt,moving){const e=G.encounter;if(!e||e.type==='none'||e.type==='impostor'||e.phase==='end')return;const p=G.position;
  if(e.type==='rush'){
   const ob=G.objects.find(o=>o.kind==='rush');
   e.time-=dt;
-  if(e.phase==='start'&&e.time<=0){e.phase='warn';e.time=4.8;say('AS LUZES ESTÃO PISCANDO','ENCONTRE UM ARMÁRIO E SE ESCONDA',3.6,true);subtitle('Um ronco começa no outro extremo do corredor.',3);audioCue('rushWarning');}
+  if(e.phase==='start'&&e.time<=0){e.phase='warn';e.time=4.8;threatHint('AS LUZES ESTÃO PISCANDO','ENCONTRE UM ARMÁRIO E SE ESCONDA',3.6,true);trainingSubtitle('Um ronco começa no outro extremo do corredor.',3);audioCue('rushWarning');}
   else if(e.phase==='warn'&&e.time<=0){e.phase='passing';e.time=1.9;if(ob){ob.active=true;ob.x=7.5;ob.y=2.4;}audioCue('rush');shake=Math.max(shake,7);}
   else if(e.phase==='passing'){
    if(ob){ob.active=true;ob.y=2.4+(1-clamp(e.time/1.9,0,1))*12.4;ob.x=7.5+Math.sin(G.roomTime*8)*.36;}
@@ -934,8 +954,8 @@ function tickEncounter(dt,moving){const e=G.encounter;if(!e||e.type==='none'||e.
    if(G.hidden&&G.hiddenIn&&!e.peekDone&&e.time<1.12){
     e.peekDone=true;e.phase='staring';e.time=2.8;e.peekSoundClock=.55;
     if(ob){ob.active=true;ob.x=p.x+Math.cos(p.a)*1.2;ob.y=p.y+Math.sin(p.a)*1.2;}
-    say('O SOM PAROU.','ELE ESTÁ BEM NA FRENTE DO ARMÁRIO',2.5,true);
-    subtitle('Não saia. Alguma coisa está observando pelas frestas...',2.8);
+    threatHint('O SOM PAROU.','ELE ESTÁ BEM NA FRENTE DO ARMÁRIO',2.5,true);
+    trainingSubtitle('Não saia. Alguma coisa está observando pelas frestas...',2.8);
     audioCue('closetScrape');shake=Math.max(shake,5);
    }else{
     if(!e.hit&&e.time<1.05){e.hit=true;if(!G.hidden)damage(95,'O VÉU');}
@@ -948,7 +968,7 @@ function tickEncounter(dt,moving){const e=G.encounter;if(!e||e.type==='none'||e.
    if(e.peekSoundClock<=0){audioCue('closetBreath');e.peekSoundClock=.80+rand(0,.3);}
    if(G.hidden)shake=Math.max(shake,.45+Math.abs(Math.sin(G.roomTime*8))*1.1);
    // If the player opens the door during the stare, hide(false) triggers damage.
-   if(e.time<=0){e.phase='leaving';e.time=1.25;audioCue('retreat');subtitle('As garras se afastam lentamente... espere mais um instante.',1.7);}
+   if(e.time<=0){e.phase='leaving';e.time=1.25;audioCue('retreat');trainingSubtitle('As garras se afastam lentamente... espere mais um instante.',1.7);}
   }
   else if(e.phase==='leaving'){
    if(ob){let d=(1-clamp(e.time/1.25,0,1));ob.active=true;ob.x=p.x+Math.cos(p.a)*(1.15+d*2.8);ob.y=p.y+Math.sin(p.a)*(1.15+d*2.8);}
@@ -956,31 +976,31 @@ function tickEncounter(dt,moving){const e=G.encounter;if(!e||e.type==='none'||e.
   }
  }
  if(e.type==='eye'){
-  e.time-=dt;if(e.phase==='start'&&e.time<=0){e.phase='active';e.time=14;e.lookAway=0;e.cooldown=1.15;say('NÃO ENCARE','A ÍRIS ACORDOU',2.4,true);audioCue('eye');G.objects.find(o=>o.kind==='eye').active=true;}
+  e.time-=dt;if(e.phase==='start'&&e.time<=0){e.phase='active';e.time=14;e.lookAway=0;e.cooldown=1.15;threatHint('NÃO ENCARE','A ÍRIS ACORDOU',2.4,true);audioCue('eye');G.objects.find(o=>o.kind==='eye').active=true;}
   if(e.phase==='active'){
    const ob=G.objects.find(o=>o.kind==='eye');if(!ob)return;let angle=Math.abs(normAngle(Math.atan2(ob.y-p.y,ob.x-p.x)-p.a)),facing=angle<.56&&dist(ob,p)<12&&!G.hidden;
    if(facing){e.lookAway=0;e.cooldown-=dt;if(e.cooldown<=0){damage(14,'A ÍRIS');e.cooldown=1.2;}}else e.lookAway+=dt;
-   if(e.lookAway>2.8||e.time<=0){e.phase='end';ob.active=false;if(G.training&&G.room===4)markTrainingPass();else say('O OLHO SE FECHOU','VOCÊ PODE SEGUIR',2);}
+   if(e.lookAway>2.8||e.time<=0){e.phase='end';ob.active=false;if(G.training&&G.room===4)markTrainingPass();else threatHint('O OLHO SE FECHOU','VOCÊ PODE SEGUIR',2);}
   }
  }
  if(e.type==='echo'){
   const specter=G.objects.find(o=>o.kind==='echo');
   if(specter){specter.active=['warning','freeze','rest'].includes(e.phase);const targetX=7.55+Math.sin(G.roomTime*(e.phase==='freeze'?1.1:2.1))*(e.phase==='rest'?1.4:.65);const targetY=e.phase==='freeze'?7.0:e.phase==='warning'?5.8:4.5;specter.x=lerp(specter.x,targetX,Math.min(1,dt*2.6));specter.y=lerp(specter.y,targetY,Math.min(1,dt*3.8));specter.float=(e.phase==='rest'?.8:e.phase==='warning'?.55:0);}
-  e.time-=dt;if(e.phase==='start'&&e.time<=0){e.phase='warning';e.time=1.5;say('ESCUTE.','O ECO ESTÁ NA SALA. QUANDO ELE MANDAR, PARE.',1.65,true);audioCue('echo');}
-  else if(e.phase==='warning'&&e.time<=0){e.phase='freeze';e.time=1.65;e.hit=false;if(specter)specter.active=true;$('echoWarning').style.display='block';audioCue('echo');}
-  else if(e.phase==='freeze'){if(moving&&!G.hidden&&!e.hit){e.hit=true;damage(26,'O ECO');}if(e.time<=0){$('echoWarning').style.display='none';e.charges++;if(e.charges>=2){e.phase='end';if(specter)specter.active=false;if(G.training&&G.room===5)markTrainingPass();else say('ELE SE AFASTOU','VOCÊ PODE ANDAR',1.9);}else{e.phase='rest';e.time=2.7;}}}
-  else if(e.phase==='rest'&&e.time<=0){e.phase='warning';e.warningKnocks=0;e.signalClock=0;e.time=1.1;say('ELE VOLTOU','PREPARE-SE PARA FICAR IMÓVEL',1.1,true);}
+  e.time-=dt;if(e.phase==='start'&&e.time<=0){e.phase='warning';e.time=1.5;threatHint('ESCUTE.','O ECO ESTÁ NA SALA. QUANDO ELE MANDAR, PARE.',1.65,true);audioCue('echo');}
+  else if(e.phase==='warning'&&e.time<=0){e.phase='freeze';e.time=1.65;e.hit=false;if(specter)specter.active=true;$('echoWarning').style.display=G.training?'block':'none';audioCue('echo');}
+  else if(e.phase==='freeze'){if(moving&&!G.hidden&&!e.hit){e.hit=true;damage(26,'O ECO');}if(e.time<=0){$('echoWarning').style.display='none';e.charges++;if(e.charges>=2){e.phase='end';if(specter)specter.active=false;if(G.training&&G.room===5)markTrainingPass();else threatHint('ELE SE AFASTOU','VOCÊ PODE ANDAR',1.9);}else{e.phase='rest';e.time=2.7;}}}
+  else if(e.phase==='rest'&&e.time<=0){e.phase='warning';e.warningKnocks=0;e.signalClock=0;e.time=1.1;threatHint('ELE VOLTOU','PREPARE-SE PARA FICAR IMÓVEL',1.1,true);}
  }
  if(e.type==='chaser'){
   e.time-=dt;let monster=G.objects.find(o=>o.kind==='chaser');if(!monster)return;
-  if(e.phase==='start'&&e.time<=0){e.phase='pursuing';monster.active=true;if(G.training&&G.room===6)markTrainingPass();say('CORRA!','O RASTRO ESTÁ ATRÁS DE VOCÊ',3.1,true);audioCue('rush');}
+  if(e.phase==='start'&&e.time<=0){e.phase='pursuing';monster.active=true;if(G.training&&G.room===6)markTrainingPass();threatHint('CORRA!','O RASTRO ESTÁ ATRÁS DE VOCÊ',3.1,true);audioCue('rush');}
   if(e.phase==='pursuing'){let dx=p.x-monster.x,dy=p.y-monster.y,d=Math.hypot(dx,dy);if(d>.02){let v=e.chaseSpeed*dt;monster.x+=dx/d*v;monster.y+=dy/d*v;}if(d<1.05&&!e.hit){e.hit=true;damage(49,'O RASTRO');monster.y=Math.min(13,monster.y+2);monster.x=7.5;setTimeoutSafe(()=>{if(G.encounter===e)e.hit=false;},1.7);}if(d<3)shake=Math.max(shake,.8);}
  }
  if(e.type==='whisper'){
   const ghost=G.objects.find(o=>o.kind==='whisper');
   if(ghost){ghost.active=e.phase==='active';const dark=clamp(e.darkTime/4,0,1);let a=G.roomTime*.61;ghost.x=clamp(p.x+Math.sin(a)*2.2+1.5,2,12.8);ghost.y=clamp(p.y-4.3+dark*2.0+Math.cos(a)*.7,2.15,12.9);}
-  e.time-=dt;if(e.phase==='start'&&e.time<=0){e.phase='active';e.time=999;if(ghost)ghost.active=true;say('ALGO RESPIRA NO ESCURO','MANTENHA A LANTERNA LIGADA',3.2,true);audioCue('eye');}
-  if(e.phase==='active'){if(G.training&&G.room===7){if(G.torch&&G.battery>0)G.tutorialLightTime+=dt;else G.tutorialLightTime=Math.max(0,G.tutorialLightTime-dt);if(G.tutorialLightTime>=3)markTrainingPass();}if(G.torch&&G.battery>0||G.hidden){e.darkTime=Math.max(0,e.darkTime-dt*2);if(e.darkTime>.4&&G.torch)say('A PRESENÇA RECUOU','A LUZ AFASTA A VELADORA',1.4);}else{e.darkTime+=dt;if(e.darkTime>2.1&&e.darkTime<2.25)say('ELA TE VIU','LIGUE A LANTERNA!',1.4,true);if(e.darkTime>4){damage(35,'A VELADORA');e.darkTime=1.3;}}}
+  e.time-=dt;if(e.phase==='start'&&e.time<=0){e.phase='active';e.time=999;if(ghost)ghost.active=true;threatHint('ALGO RESPIRA NO ESCURO','MANTENHA A LANTERNA LIGADA',3.2,true);audioCue('eye');}
+  if(e.phase==='active'){if(G.training&&G.room===7){if(G.torch&&G.battery>0)G.tutorialLightTime+=dt;else G.tutorialLightTime=Math.max(0,G.tutorialLightTime-dt);if(G.tutorialLightTime>=3)markTrainingPass();}if(G.torch&&G.battery>0||G.hidden){e.darkTime=Math.max(0,e.darkTime-dt*2);if(e.darkTime>.4&&G.torch)threatHint('A PRESENÇA RECUOU','A LUZ AFASTA A VELADORA',1.4);}else{e.darkTime+=dt;if(e.darkTime>2.1&&e.darkTime<2.25)threatHint('ELA TE VIU','LIGUE A LANTERNA!',1.4,true);if(e.darkTime>4){damage(35,'A VELADORA');e.darkTime=1.3;}}}
  }
 }
 const timed=[];function setTimeoutSafe(fn,sec){timed.push({fn,remaining:sec});}
@@ -1015,9 +1035,9 @@ function update(dt){if(G.mode==='finale'){tickFinale(dt);return;}if(G.mode==='el
   }
  }}
  tickEncounter(dt,moving&&!G.hidden);if(G.mode!=='playing')return;signalForEncounter();updateWatcher(dt);
- const target=nearObj(),interactionText=target?({door:G.puzzle&&G.puzzle.done<G.puzzle.need?'PORTA SELADA · '+G.puzzle.done+'/'+G.puzzle.need:G.locked&&!G.key?'PORTA TRANCADA · BUSQUE CHAVE':'ABRIR PORTA '+String(G.room===0?1:G.room+1).padStart(3,'0'),closet:'ENTRAR NO ARMÁRIO',exitHide:G.encounter?.type==='rush'&&['staring','leaving'].includes(G.encounter.phase)?'NÃO ABRA · ELE ESTÁ AQUI':'SAIR DO ARMÁRIO',drawer:target.searched?'GAVETA VAZIA':'REVISTAR GAVETA',battery:'PEGAR BATERIA',bandage:'PEGAR CURATIVO',bell:'TOCAR CAMPAINHA',note:'LER BILHETE',radio:'OUVIR RÁDIO',fuse:'RESTAURAR FUSÍVEL',lever:'ATIVAR DISJUNTOR',sigil:'QUEBRAR SELO',fake:'ABRIR PORTA '+String(target.num).padStart(3,'0')})[target.kind]:'';
- $('interaction').classList.toggle('show',!!target);$('actionText').textContent=interactionText||'';$('actionSub').textContent=target?.kind==='door'&&G.puzzle&&G.puzzle.done<G.puzzle.need?'PROCURE OS MECANISMOS':target?.kind==='door'&&G.locked&&!G.key?'REQUER CHAVE':target?.kind==='fake'?'A PORTA PARECE ESTRANHA':target?.kind==='exitHide'&&G.encounter?.type==='rush'&&['staring','leaving'].includes(G.encounter.phase)?'AGUARDE O VÉU IR EMBORA':target?.kind==='exitHide'?'ESPERE O PERIGO PASSAR':'PRESSIONE PARA INTERAGIR';$('actionKey').textContent=coarse?'TOQUE':'E';
- updateObjective();$('hpBar').style.width=G.health+'%';$('stBar').style.width=G.stamina+'%';$('batText').textContent=Math.floor(G.battery)+'%';$('keyText').textContent=G.key?'SIM':'—';$('healText').textContent=G.bandages;$('healItem').classList.toggle('off',G.bandages<1);$('lightItem').classList.toggle('off',!G.torch);updateActionButtons();
+ const target=nearObj(),interactionText=target?({door:G.puzzle&&G.puzzle.done<G.puzzle.need?'PORTA SELADA · '+G.puzzle.done+'/'+G.puzzle.need:G.locked&&!G.key?'PORTA TRANCADA · BUSQUE CHAVE':'ABRIR PORTA '+String(G.room===0?1:G.room+1).padStart(3,'0'),closet:'ENTRAR NO ARMÁRIO',exitHide:'SAIR DO ARMÁRIO',drawer:target.searched?'GAVETA VAZIA':'REVISTAR GAVETA',battery:'PEGAR BATERIA',bandage:'PEGAR CURATIVO',bell:'TOCAR CAMPAINHA',note:'LER BILHETE',radio:'OUVIR RÁDIO',fuse:'RESTAURAR FUSÍVEL',lever:'ATIVAR DISJUNTOR',sigil:'QUEBRAR SELO',fake:'ABRIR PORTA '+String(target.num).padStart(3,'0')})[target.kind]:'';
+ $('interaction').classList.toggle('show',!!target);$('actionText').textContent=interactionText||'';$('actionSub').textContent=target?.kind==='door'&&G.puzzle&&G.puzzle.done<G.puzzle.need?'PROCURE OS MECANISMOS':target?.kind==='door'&&G.locked&&!G.key?'REQUER CHAVE':target?.kind==='fake'?'PRESSIONE PARA ABRIR':target?.kind==='exitHide'?'ESPERE O PERIGO PASSAR':'PRESSIONE PARA INTERAGIR';$('actionKey').textContent=coarse?'TOQUE':'E';
+ updateObjective();$('hpBar').style.width=G.health+'%';$('stBar').style.width=G.stamina+'%';$('batText').textContent=Math.floor(G.battery)+'%';$('keyText').textContent=G.key?'SIM':'—';$('healText').textContent=G.bandages;$('healItem').classList.toggle('off',G.bandages<1);$('lightItem').classList.toggle('off',!G.torch);$('lightMobile').classList.toggle('lit',G.torch&&G.battery>0);$('lightMobile').setAttribute('aria-pressed',String(G.torch&&G.battery>0));updateActionButtons();
  $('darkFx').style.opacity=String(G.encounter?.type==='whisper'?.48:0);
  $('hurtFx').style.opacity=String(clamp((100-G.health)/100*.37+G.injuryPulse*.72,0,.93));
 }
@@ -1209,6 +1229,6 @@ $('touchRun').addEventListener('pointerdown',e=>{e.preventDefault();if(G.mode===
 $('joy').addEventListener('pointerdown',e=>{e.preventDefault();joy.active=true;joy.id=e.pointerId;try{e.currentTarget.setPointerCapture(e.pointerId);}catch(_){}updateJoy(e);});$('joy').addEventListener('pointermove',e=>{if(joy.active&&joy.id===e.pointerId)updateJoy(e);});function updateJoy(e){const r=$('joy').getBoundingClientRect();let dx=(e.clientX-r.left-r.width/2)/(r.width*.35),dy=(e.clientY-r.top-r.height/2)/(r.height*.35),k=Math.max(1,Math.hypot(dx,dy));joy.x=dx/k;joy.y=dy/k;$('joyDot').style.transform=`translate(${joy.x*34}px,${joy.y*34}px)`;}function resetJoy(){joy.x=joy.y=0;joy.active=false;$('joyDot').style.transform='translate(0,0)';}for(let ev of ['pointerup','pointercancel','lostpointercapture'])$('joy').addEventListener(ev,resetJoy);
 addEventListener('visibilitychange',()=>{if(document.hidden&&G.mode==='playing')pause();});canvas.addEventListener('pointerdown',e=>{if(!coarse||G.mode!=='playing')return;touchLook={id:e.pointerId,x:e.clientX};try{canvas.setPointerCapture(e.pointerId);}catch(_){};});canvas.addEventListener('pointermove',e=>{if(!touchLook||touchLook.id!==e.pointerId||G.hidden||G.mode!=='playing')return;G.position.a=normAngle(G.position.a+clamp(e.clientX-touchLook.x,-52,52)*.0074);touchLook.x=e.clientX;});for(let ev of ['pointerup','pointercancel'])canvas.addEventListener(ev,()=>{touchLook=null;});
 // Lightweight public diagnostics for game verification.
-window.__GRAND_ATRIUM=window.__VESPERA={state:()=>({training:G.training,trainingPassed:G.trainingPassed,mode:G.mode,room:G.room,elevatorTime:G.elevatorTime,crouching:G.crouching,runToggle:touchRunning,scene:G.scene,health:G.health,stamina:G.stamina,battery:G.battery,hidden:G.hidden,peekDone:!!G.encounter?.peekDone,event:G.encounter?.type,phase:G.encounter?.phase,position:{...G.position},key:G.key,closets:G.objects.filter(o=>o.kind==='closet').length,qteStage:G.qte?.stage??null,jumpType:G.jump?.type??null,jumpFatal:G.jump?.fatal??null}),enterRoom:n=>{if(G.mode==='playing')createRoom(clamp(Math.floor(n),1,G.training?7:TOTAL-1));},startTraining:()=>beginGame(true),startReal:()=>beginGame(false),getObjects:()=>G.objects.map(o=>({kind:o.kind,x:o.x,y:o.y,num:o.num})),interact:interaction,listen:listenDoor,crouch:toggleCrouch,skipElevator:()=>{if(G.mode==='elevator')finishElevator();},look:a=>G.position.a=a,setPosition:(x,y)=>{G.position.x=x;G.position.y=y;},setTorch:on=>{G.torch=on;},forceEncounterPhase:(phase,time)=>{if(G.encounter){G.encounter.phase=phase;G.encounter.time=time;}}};
+window.__GRAND_ATRIUM=window.__VESPERA={state:()=>({training:G.training,trainingPassed:G.trainingPassed,mode:G.mode,room:G.room,elevatorTime:G.elevatorTime,crouching:G.crouching,runToggle:touchRunning,scene:G.scene,health:G.health,stamina:G.stamina,battery:G.battery,hidden:G.hidden,peekDone:!!G.encounter?.peekDone,event:G.encounter?.type,phase:G.encounter?.phase,position:{...G.position},key:G.key,closets:G.objects.filter(o=>o.kind==='closet').length,secondChanceAvailable:G.lastBreath,qteStage:G.qte?.stage??null,jumpType:G.jump?.type??null,jumpFatal:G.jump?.fatal??null}),enterRoom:n=>{if(G.mode==='playing')createRoom(clamp(Math.floor(n),1,G.training?7:TOTAL-1));},startTraining:()=>beginGame(true),startReal:()=>beginGame(false),getObjects:()=>G.objects.map(o=>({kind:o.kind,x:o.x,y:o.y,num:o.num})),interact:interaction,listen:listenDoor,crouch:toggleCrouch,skipElevator:()=>{if(G.mode==='elevator')finishElevator();},look:a=>G.position.a=a,setPosition:(x,y)=>{G.position.x=x;G.position.y=y;},setTorch:on=>{G.torch=on;},forceEncounterPhase:(phase,time)=>{if(G.encounter){G.encounter.phase=phase;G.encounter.time=time;}}};
 })();
 </script></body></html>
