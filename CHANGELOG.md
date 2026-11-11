@@ -1,5 +1,12 @@
 # Histórico de versões
 
+## v1.2.0 — Arquivo das mortes (2026-11-10)
+- Tela de morte mostra o nome da entidade responsável, inclusive após falha na segunda chance.
+- 60 registros: 10 frases e dicas de sobrevivência para cada uma das seis criaturas.
+- Seleção aleatória sem repetir a mesma combinação em mortes consecutivas para a mesma criatura.
+- Interface temática de óbito adaptada a computadores e celulares.
+
+
 ## v1.1.0 — Terror sem avisos (2026-11-10)
 - Removidas as faixas e mensagens gigantes que antecipavam criaturas na partida real; as pistas agora são luzes, sons e movimentos.
 - Tutorial revisado para ensinar a perceber detalhes discretos no ambiente e nos áudios.
