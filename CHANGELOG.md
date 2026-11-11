@@ -1,5 +1,13 @@
 # Histórico de versões
 
+## v1.3.0 — A Mão que Observa (2026-11-10)
+- Duplicata remodelada: mão gigante com olho na palma surge da porta falsa.
+- Ataques cinematográficos distintos para dano de 50 de vida e golpe fatal com agarrão.
+- Garra articulada com cinco dedos, unhas afiadas, tendões e olho que se abre durante a aproximação.
+- Eco, Véu, Rastro, Veladora e Íris com anatomia adicional animada em seus sprites, mantendo cache otimizado para mobile.
+- Regra de segunda chance única e arquivo de mortes preservados.
+
+
 ## v1.2.0 — Arquivo das mortes (2026-11-10)
 - Tela de morte mostra o nome da entidade responsável, inclusive após falha na segunda chance.
 - 60 registros: 10 frases e dicas de sobrevivência para cada uma das seis criaturas.
