@@ -1,5 +1,12 @@
 # Histórico de versões
 
+## v1.4.0 — O Olho na Palma (2026-11-10)
+- Duplicata mantém o jogador agarrado durante os três minigames da segunda chance.
+- Olho na palma acompanha mouse, toque e teclas do jogador; dedos se contraem com o progresso e erros.
+- Interface da segunda chance própria para Duplicata, adaptada ao celular.
+- Segunda chance única por partida preservada e animação de libertação ao vencer.
+
+
 ## v1.3.0 — A Mão que Observa (2026-11-10)
 - Duplicata remodelada: mão gigante com olho na palma surge da porta falsa.
 - Ataques cinematográficos distintos para dano de 50 de vida e golpe fatal com agarrão.
